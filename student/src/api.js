@@ -9,7 +9,7 @@ const api = axios.create({
 });
 
 // This "interceptor" automatically adds your login token to every secure request.
-// This logic does not need to change.
+
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('adminToken');
