@@ -49,81 +49,63 @@ const SinglePostPage = () => {
     if (!post) return <div className={styles.loading}>Article not found.</div>;
     
     const pageUrl = `https://question.maarula.in/articles/${post.slug}`;
-    const pageTitle = `${post.title} | Mathem Solvex`;
+    const pageTitle = `${post.title} | Maarula Classes`;
     const pageDescription = post.metaDescription || post.content.substring(0, 160).replace(/<[^>]+>/g, '');
-    
+    const imageUrl = post.featuredImage || 'https://question.maarula.in/maarulalogo.png';
+
     const articleSchema = {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": post.title,
+        "description": pageDescription,
+        "image": imageUrl,
+        "author": { "@type": "Organization", "name": "Maarula Classes" },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Maarula Classes",
+            "logo": { "@type": "ImageObject", "url": "https://question.maarula.in/maarulalogo.png" }
+        },
+        "datePublished": post.createdAt,
+        "dateModified": post.updatedAt
+    };
 
-        "@context": "https://schema.org",
-
-        "@type": "Article",
-
-        "headline": post.title,
-
-        "description": pageDescription,
-
-        "image": post.featuredImage || "/maarulalogo.png",
-
-        "author": {
-
-            "@type": "Organization",
-
-            "name": "Maarula Classes"
-
-        },
-
-        "publisher": {
-
-            "@type": "Organization",
-
-            "name": "Maarula Classes",
-
-            "logo": {
-
-                "@type": "ImageObject",
-
-                "url": "https://question.maarula.in/maarulalogo.png"
-
-            }
-
-        },
-
-        "datePublished": post.createdAt,
-
-        "dateModified": post.updatedAt
-
-    };
-
-    // NEW: Breadcrumb schema for better SERP visibility
     const breadcrumbSchema = {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         "itemListElement": [{
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Home",
-            "item": "https://question.maarula.in/"
+            "@type": "ListItem", "position": 1, "name": "Home", "item": "https://question.maarula.in/"
         }, {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "Articles",
-            "item": "https://question.maarula.in/articles"
+            "@type": "ListItem", "position": 2, "name": "Articles", "item": "https://question.maarula.in/articles"
         }, {
-            "@type": "ListItem",
-            "position": 3,
-            "name": post.title
+            "@type": "ListItem", "position": 3, "name": post.title
         }]
     };
 
     return (
         <>
            <Helmet>
-               <title>{pageTitle}</title>
-               <meta name="description" content={pageDescription} />
-               <link rel="canonical" href={pageUrl} />
-               <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
-               <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
-           </Helmet>
+                <title>{pageTitle}</title>
+                <meta name="description" content={pageDescription} />
+                <link rel="canonical" href={pageUrl} />
+
+                {/* Open Graph Tags for Social Media */}
+                <meta property="og:title" content={pageTitle} />
+                <meta property="og:description" content={pageDescription} />
+                <meta property="og:url" content={pageUrl} />
+                <meta property="og:image" content={imageUrl} />
+                <meta property="og:type" content="article" />
+                <meta property="og:site_name" content="Maarula Classes" />
+
+                {/* Twitter Card Tags */}
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={pageTitle} />
+                <meta name="twitter:description" content={pageDescription} />
+                <meta name="twitter:image" content={imageUrl} />
+
+                {/* Structured Data */}
+                <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
+                <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
+            </Helmet>
 
             <div className={styles.pageWrapper}>
                 <header className={styles.postHeader}>

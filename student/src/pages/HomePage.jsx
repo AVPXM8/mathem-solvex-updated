@@ -18,51 +18,41 @@ const HomePage = () => {
     return students.filter(student => student.exam === activeTab);
   }, [activeTab]);
 
-
+       const siteSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Mathem Solvex by Maarula Classes",
+        "url": "https://question.maarula.in/",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://question.maarula.in/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    };
   return (
     <div className={styles.homePage}>
-      <Helmet>
-<title>Mathem Solvex | NIMCET PYQ, CUET PG Previous Year Paper, Syllabus & Exam Notifications MCA Entrance Prep by Maarula Classes</title>
+       <Helmet>
+                <title>Mathem Solvex | NIMCET PYQ, CUET PG Previous Year Paper & MCA Prep</title>
+                <meta name="description" content="Practice NIMCET PYQs, CUET PG previous year papers, and expert-level MCA entrance questions on Mathem Solvex by Maarula Classes. Get access to solved papers, mock tests, and preparation tips." />
+                <link rel="canonical" href="https://question.maarula.in/" />
+                <meta name="keywords" content="NIMCET PYQ, CUET PG previous year paper, MCA entrance exam 2025, NIMCET solved papers, CUET PG MCA preparation, Maarula Classes" />
 
-  <meta 
-    name="description" 
-          content="Practice NIMCET PYQs, CUET PG previous year papers, and expert-level MCA entrance questions on Mathem Solvex by Maarula Classes. Get access to solved papers, mock tests, and preparation tips from India’s best MCA coaching."
-  />
+                {/* Open Graph Tags for Social Sharing */}
+                <meta property="og:title" content="Mathem Solvex | NIMCET & CUET PG PYQ Bank by Maarula Classes" />
+                <meta property="og:description" content="Access NIMCET & CUET PG previous year question papers, MCA entrance solved papers, and expert mock tests. Powered by Maarula Classes." />
+                <meta property="og:url" content="https://question.maarula.in/" />
+                <meta property="og:type" content="website" />
+                <meta property="og:image" content="https://question.maarula.in/maarulalogo.png" /> {/* Use a default share image */}
 
-  <meta 
-    name="keywords" 
-          content="NIMCET PYQ, CUET PG previous year paper, MCA entrance exam 2025, how to prepare for NIMCET, best NIMCET coaching, NIMCET solved papers, CUET PG MCA preparation, NIMCET question bank, Maarula Classes, MCA entrance mock test"
-  />
+                {/* Twitter Card Tags */}
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content="Mathem Solvex | MCA Entrance PYQs & Prep Guide" />
+                <meta name="twitter:description" content="The best platform to practice NIMCET PYQs, CUET PG solved papers, and mock tests. From Maarula Classes." />
+                <meta name="twitter:image" content="https://question.maarula.in/maarulalogo.png" />
 
-  <link rel="canonical" href="https://question.maarula.in/" />
-{/* Open Graph */}
-        <meta property="og:title" content="Mathem Solvex | NIMCET & CUET PG PYQ Bank by Maarula Classes" />
-        <meta property="og:description" content="Access NIMCET & CUET PG previous year question papers, MCA entrance solved papers, and expert mock tests. Powered by Maarula Classes." />
-        <meta property="og:url" content="https://question.maarula.in/" />
-        <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://res.cloudinary.com/dwmj6up6j/image/upload/v1752683439/maarulalogo_lywhdo.png" />
-
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Mathem Solvex | MCA Entrance PYQs & Prep Guide" />
-        <meta name="twitter:description" content="Best platform to practice NIMCET PYQs, CUET PG solved papers, and mock tests. Maarula Classes brings top-notch MCA prep content." />
-        <meta name="twitter:image" content="https://question.maarula.in/og-cover.jpg" />
-
-        {/* Schema.org */}
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            "name": "Mathem Solvex by Maarula Classes",
-            "url": "https://question.maarula.in/",
-            "potentialAction": {
-              "@type": "SearchAction",
-              "target": "https://question.maarula.in/search?q={search_term_string}",
-              "query-input": "required name=search_term_string"
-            }
-          })}
-        </script>
-</Helmet>
+                {/* Structured Data */}
+                <script type="application/ld+json">{JSON.stringify(siteSchema)}</script>
+            </Helmet>
 
 
       {/* Section 1: Top Carousel */}

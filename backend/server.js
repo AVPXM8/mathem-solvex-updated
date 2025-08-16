@@ -25,6 +25,15 @@ const app = express();
 // This tells Express to trust the 'X-Forwarded-For' header that Render adds.
 // It is essential for rate-limiting to work correctly in a deployed environment.
 app.set('trust proxy', 1);
+// ---  PRERENDER.IO MIDDLEWARE ---
+// This should be one of the first middleware to run.
+// It will intercept requests from crawlers and serve a cached, rendered version.
+const prerender = require('prerender-node');
+if (process.env.NODE_ENV === 'production' || process.env.PRERENDER_TOKEN) {
+    console.log('Prerender middleware enabled.'); 
+    prerender.set('prerenderToken', process.env.PRERENDER_TOKEN);
+    app.use(prerender);
+}
 
 // --- 2. Secure CORS Configuration ---
 // This allows requests from your local frontend and your deployed frontend,
@@ -49,7 +58,8 @@ app.use(cors(corsOptions));
 
 // --- Standard Middleware ---
 app.use(express.json()); // for parsing application/json
-
+// This serves any files placed in the 'public' folder.
+app.use(express.static(path.join(__dirname, 'public')));
 // --- API Routes ---
 // The modular routing structure is excellent and remains the same.
 app.use('/api/questions', require('./routes/questionRoutes'));
@@ -60,6 +70,7 @@ app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'ok', message: 'Server is healthy' });
 });
 
+// --- Dynamic Sitemap Route ---
 app.get('/sitemap.xml', async (req, res) => {
     try {
         const links = [
@@ -68,28 +79,29 @@ app.get('/sitemap.xml', async (req, res) => {
             { url: '/articles', changefreq: 'daily', priority: 0.9 },
         ];
 
-        // Fetch all question IDs to create a link for each one
-        const questions = await Question.find({}, '_id');
+        // Fetch questions with updatedAt for the 'lastmod' sitemap field
+        const questions = await Question.find({ isPublic: true }, '_id updatedAt');
         questions.forEach(q => {
             links.push({ 
                 url: `/question/${q._id}`, 
                 changefreq: 'weekly', 
-                priority: 0.7 
+                priority: 0.7,
+                lastmod: q.updatedAt // SEO Improvement
             });
         });
         
-        // Fetch all post slugs to create a link for each one
-        const posts = await Post.find({}, 'slug');
+        // Fetch posts with updatedAt for the 'lastmod' sitemap field
+        const posts = await Post.find({}, 'slug updatedAt');
         posts.forEach(p => {
             links.push({ 
                 url: `/articles/${p.slug}`, 
                 changefreq: 'weekly', 
-                priority: 0.8 
+                priority: 0.8,
+                lastmod: p.updatedAt // SEO Improvement
             });
         });
         
-        // This is your live site's base URL. Use an environment variable for this in production.
-        const hostname = process.env.PRODUCTION_URL || `http://${req.headers.host}`;
+        const hostname = process.env.STUDENT_URL || `http://${req.headers.host}`;
         const stream = new SitemapStream({ hostname });
 
         res.header('Content-Type', 'application/xml');
@@ -100,6 +112,16 @@ app.get('/sitemap.xml', async (req, res) => {
     } catch (error) {
         console.error('Sitemap generation error:', error);
         res.status(500).send('Error generating sitemap');
+    }
+});
+
+// --- SERVE THE REACT STUDENT PORTAL ---
+// This must come AFTER your API routes.
+app.use(express.static(path.join(__dirname, '..', 'student', 'dist')));
+app.get('*', (req, res) => {
+    // This check prevents API routes from being overridden by the React app
+    if (!req.originalUrl.startsWith('/api')) {
+        res.sendFile(path.resolve(__dirname, '..', 'student', 'dist', 'index.html'));
     }
 });
 

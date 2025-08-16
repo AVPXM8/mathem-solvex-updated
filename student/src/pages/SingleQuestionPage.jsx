@@ -98,39 +98,65 @@ const SingleQuestionPage = () => {
     }
 
     // If after loading, the question is still not found, show an error.
-    if (!question) {
-        return <div className={styles.loading}>Question not found or could not be loaded.</div>;
+     if (!question) {
+        return (
+            <>
+                <Helmet>
+                    <title>Question Not Found</title>
+                    <meta name="robots" content="noindex" /> 
+                </Helmet>
+                <div>Question not found or could not be loaded.</div>
+            </>
+        );
     }
-
     const isCorrect = question.options[selectedOption]?.isCorrect;
+    // --- SEO DATA PREPARATION ---
+    const plainTextQuestion = question.questionText.replace(/<[^>]+>|\$/g, '');
+    const pageUrl = `https://question.maarula.in/question/${question._id}`;
+    const pageTitle = `${plainTextQuestion.substring(0, 60)}... | Maarula`;
+    const pageDescription = `Solution for ${question.subject} question from ${question.exam} ${question.year}: "${plainTextQuestion.substring(0, 100)}...".`;
+    const imageUrl = question.questionImageURL || 'https://question.maarula.in/maarulalogo.png'; // Default image
+    const acceptedAnswer = question.options.find(opt => opt.isCorrect);
 
-const pageTitle = `${question.questionText.substring(0, 60).replace(/<[^>]+>/g, '')}... | Maarula Classes`;
-const pageDescription = `Detailed solution for ${question.subject} question from ${question.exam} ${question.year}. Includes text and video explanations.`;
-
-const acceptedAnswer = question.options.find(opt => opt.isCorrect);
-
-const qaSchema = {
-      "@context": "https://schema.org",
-      "@type": "QAPage",
-      "mainEntity": {
-        "@type": "Question",
-        "name": question.questionText.replace(/<[^>]+>/g, ''), // Plain text version of the question
-        "answerCount": question.options.length,
-        "acceptedAnswer": acceptedAnswer ? {
-          "@type": "Answer",
-          "text": acceptedAnswer.text.replace(/<[^>]+>/g, '') // Plain text version of the answer
-        } : undefined // If no correct answer is marked, don't include this field
-      }
+    const qaSchema = {
+        "@context": "https://schema.org",
+        "@type": "QAPage",
+        "mainEntity": {
+            "@type": "Question",
+            "name": plainTextQuestion,
+            "answerCount": question.options.length,
+            "acceptedAnswer": acceptedAnswer ? {
+                "@type": "Answer",
+                "text": acceptedAnswer.text.replace(/<[^>]+>|\$/g, '')
+            } : undefined
+        }
     };
     return (
         <>
-        <Helmet>
-            <title>{pageTitle}</title>
-            <meta name="description" content={pageDescription} />
-            <script type="application/ld+json">
-                {JSON.stringify(qaSchema)}
-            </script>
-        </Helmet>
+         <Helmet>
+                <title>{pageTitle}</title>
+                <meta name="description" content={pageDescription} />
+                <link rel="canonical" href={pageUrl} />
+
+                {/* Open Graph Tags for Social Media (Facebook, WhatsApp, etc.) */}
+                <meta property="og:title" content={pageTitle} />
+                <meta property="og:description" content={pageDescription} />
+                <meta property="og:url" content={pageUrl} />
+                <meta property="og:image" content={imageUrl} />
+                <meta property="og:type" content="article" />
+                <meta property="og:site_name" content="Maarula" />
+
+                {/* Twitter Card Tags */}
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={pageTitle} />
+                <meta name="twitter:description" content={pageDescription} />
+                <meta name="twitter:image" content={imageUrl} />
+
+                {/* Structured Data */}
+                <script type="application/ld+json">
+                    {JSON.stringify(qaSchema)}
+                </script>
+            </Helmet>
         <div className={styles.pageLayout}>
             <div className={styles.mainContent}>
                 <div className={styles.breadcrumb}>
