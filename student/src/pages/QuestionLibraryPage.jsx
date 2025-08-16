@@ -90,14 +90,19 @@ const QuestionLibraryPage = () => {
 return (
     <>
         <Helmet>
-            <title>NIMCET & CUET-PG Previous Year Question Bank | Maarula Classes</title>
-            <meta name="description" content="Access and solve thousands of Previous Year Questions (PYQs) for NIMCET, CUET-PG, and other top MCA entrance exams. Filter by subject and year to boost your preparation." />
-            <link rel="canonical" href="https://questions.maarula.in/questions" />
-            <script type="application/ld+json">
-                {JSON.stringify(breadcrumbSchema)}
-            </script>
-        </Helmet>
-
+                <title>NIMCET & CUET-PG Previous Year Question Bank | Maarula Classes</title>
+                <meta name="description" content="Access and solve thousands of Previous Year Questions (PYQs) for NIMCET, CUET-PG, and other top MCA entrance exams. Filter by subject and year to boost your preparation." />
+                <link rel="canonical" href="https://question.maarula.in/questions" />
+                
+                {/* Social Media Tags */}
+                <meta property="og:title" content="The Ultimate MCA Entrance Question Bank" />
+                <meta property="og:description" content="Filter and practice thousands of PYQs for NIMCET, CUET-PG, and more." />
+                <meta property="og:url" content="https://question.maarula.in/questions" />
+                
+                <script type="application/ld+json">
+                    {JSON.stringify(breadcrumbSchema)}
+                </script>
+            </Helmet>
             <div className={styles.pageHeader}>
                 <h1>The Ultimate Question Bank</h1>
                 <p>Here you can get all the PYQs for NIMCET, CUET-PG, and more. Sharpen your skills with the most comprehensive collection of solved papers.</p>

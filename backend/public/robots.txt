@@ -1,0 +1,10 @@
+# Allow all major search engines to crawl the site
+User-agent: *
+Allow: /
+
+# Disallow crawling of admin or API paths if you have them
+# Disallow: /admin
+# Disallow: /api
+
+# Location of the sitemap
+Sitemap: https://question.maarula.in/sitemap.xml

@@ -60,6 +60,8 @@ const ReportIssuePage = () => {
              <Helmet>
                 <title>Report an Issue | Maarula Classes</title>
                 <meta name="description" content="Report an issue with a question in the Maarula Classes question bank. Help us improve our content." />
+                {/* Tell search engines not to show this page in search results */}
+                <meta name="robots" content="noindex, nofollow" />
             </Helmet>
             <div className={styles.card}>
                 <div className={styles.cardHeader}>

@@ -55,6 +55,12 @@ const ArticleListPage = () => {
                 <title>Articles & Exam News | Maarula Classes</title>
                 <meta name="description" content="The latest exam updates, preparation strategies, and insights for NIMCET, CUET-PG, and other MCA entrance exams from the experts at Maarula Classes." />
                 <link rel="canonical" href="https://question.maarula.in/articles" />
+
+                {/* Social Media Tags */}
+                <meta property="og:title" content="Latest Articles & Exam News for MCA Aspirants" />
+                <meta property="og:description" content="Stay updated with preparation strategies and insights from Maarula Classes." />
+                <meta property="og:url" content="https://question.maarula.in/articles" />
+
                 <script type="application/ld+json">
                     {JSON.stringify(breadcrumbSchema)}
                 </script>
