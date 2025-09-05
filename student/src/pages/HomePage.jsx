@@ -18,10 +18,15 @@ const HomePage = () => {
   const [activeTab, setActiveTab] = useState('All');
   const hasMounted = useHasMounted();
 
-  const filteredStudents = useMemo(() => {
-    if (activeTab === 'All') return students;
-    return students.filter((student) => student.exam === activeTab);
-  }, [activeTab]);
+    const homepageStudents = useMemo(() => {
+        return students
+            .filter(student => student.year === 2025)
+            .sort((a, b) => {
+                const getRank = (str) => parseInt(str.replace(/[^0-9]/g, ''), 10);
+                return getRank(a.achievement) - getRank(b.achievement);
+            })
+            .slice(0, 8); // Show the top 8 students from 2025
+    }, []);
 
   // --- Structured Data ---
   const siteSchema = {
@@ -202,29 +207,19 @@ const HomePage = () => {
 
       {/* 4) Results / Student cards */}
       <section className={styles.resultsSection}>
-        <h2 className={styles.sectionTitle}>Meet Our 2025 Stars</h2>
-
-        <div className={styles.tabsContainer}>
-          {examTabs.map((tab) => (
-            <button
-              key={tab}
-              className={`${styles.tabButton} ${
-                activeTab === tab ? styles.activeTab : ''
-              }`}
-              onClick={() => setActiveTab(tab)}
-              aria-pressed={activeTab === tab}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        <div className={styles.resultsGrid}>
-          {filteredStudents.map((student) => (
-            <StudentCard key={student.id} student={student} />
-          ))}
-        </div>
-      </section>
+                <h1 className={styles.sectionTitle}>Meet Our 2025 Stars</h1>
+                <p className={styles.sectionSubtitle}>A preview of our top rankers from the latest batch.</p>
+                <div className={styles.resultsGrid}>
+                    {homepageStudents.map(student => (
+                        <StudentCard key={student.id} student={student} />
+                    ))}
+                </div>
+                <div className={styles.viewAllContainer}>
+                    <Link to="/results" className={styles.viewAllButton}>
+                        View Hall of Fame (2023-2025) &rarr;
+                    </Link>
+                </div>
+            </section>
 
       {/* 5) CTA Hub */}
       <section className={styles.ctaHub}>

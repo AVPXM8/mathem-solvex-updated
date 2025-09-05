@@ -219,9 +219,39 @@
   max-width: 700px;
   margin: 0 auto 40px;
 }
-.sectionSubtitle {
+.viewAllContainer {
+  text-align: center;
+  margin-top: 50px; /* More space above the button */
+}
+.viewAllButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #4f46e5; /* Primary brand color */
+  color: white;
+  text-decoration: none;
+  padding: 14px 30px; /* Larger button */
+  border-radius: 8px;
+  font-weight: 600;
   font-size: 1.1rem;
-  color: #475569;
+  border: none;
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.3); /* Softer shadow */
+  transition: all 0.3s ease;
+}
+.viewAllButton:hover {
+  background-color: #4338ca; /* Darker on hover */
+  transform: translateY(-3px); /* Add a lift effect */
+  box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+}
+.sectionSubtitle {
+  font-size: 1.2rem; /* Larger font */
+  color: #475569;   /* Darker, more readable color */
+  text-align: center;
+  margin-bottom: 50px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  font-weight: 500;  /* A pleasant medium weight */
   line-height: 1.6;
 }
 .sectionCta { margin-top: 40px; }
