@@ -17,13 +17,16 @@ const PostListPage = () => {
     const [sortConfig, setSortConfig] = useState({ key: 'createdAt', direction: 'desc' });
 
     // 1. Fetch ALL posts once, just like your original code
-    useEffect(() => {
+     useEffect(() => {
         const fetchPosts = async () => {
             try {
                 const response = await api.get('/posts');
-                setAllPosts(response.data || []);
+                // This new logic checks if the response is an array or an object
+                const postsData = Array.isArray(response.data) ? response.data : response.data.posts;
+                setAllPosts(postsData || []); // Always set an array, even if the data is empty
             } catch (error) {
                 toast.error("Failed to fetch posts.");
+                setAllPosts([]); // Set to empty array on error to prevent crash
             } finally {
                 setLoading(false);
             }

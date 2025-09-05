@@ -1,115 +1,97 @@
-import mongoose from 'mongoose';
-import Question from '../models/Question.js';
-import cloudinary from '../config/cloudinary.js';
+const mongoose = require('mongoose');
+const Question = require('../models/Question.js'); // Use require for CommonJS
+const cloudinary = require('../config/cloudinary.js'); // Use require for CommonJS
 
-// Small helper for cache headers (tune if you publish very frequently)
+// Helper for cache headers
 const setCache = (res, seconds = 60, sMax = 300) => {
   res.set('Cache-Control', `public, max-age=${seconds}, s-maxage=${sMax}, stale-while-revalidate=600`);
 };
 
 /**
- * GET /api/questions
- * Paginated list with optional filters + search
+ * GET /api/questions (Admin)
+ * Paginated list with advanced filters, search, and sorting
  */
-// GET ALL QUESTIONS (with filters + optional $text search)
-export const getQuestions = async (req, res) => {
+exports.getQuestions = async (req, res) => { // Use exports for CommonJS
   try {
-    // 1) Parse inputs safely
     const page = Math.max(parseInt(req.query.page ?? '1', 10), 1);
-    const limit = Math.min(Math.max(parseInt(req.query.limit ?? '15', 10), 1), 50); // cap at 50
+    const limit = Math.min(Math.max(parseInt(req.query.limit ?? '15', 10), 1), 50);
     const search = (req.query.search ?? '').trim();
-    const sortBy = ['createdAt', 'updatedAt', 'year'].includes(req.query.sortBy)
-      ? req.query.sortBy
-      : 'createdAt';
+    // Ensure 'questionNumber' is an allowed sort key
+    const sortBy = ['createdAt', 'updatedAt', 'year', 'questionNumber'].includes(req.query.sortBy) ? req.query.sortBy : 'createdAt';
     const order = req.query.order === 'asc' ? 1 : -1;
     const { exam, subject, year } = req.query;
 
-    // 2) Build filter (note: $text replaces regex when search is present)
     const filter = {};
     if (exam) filter.exam = exam;
     if (subject) filter.subject = subject;
     if (year) filter.year = year;
 
+    // Search by questionNumber if the search term is a number, otherwise search text
     if (search) {
-      // Uses the questionText text index
-      filter.$text = { $search: search };
+      if (!isNaN(search) && search.trim() !== '') {
+        filter.questionNumber = parseInt(search);
+      } else {
+        filter.$text = { $search: search };
+      }
     }
 
-    // 3) Build projection (include textScore ONLY when searching)
+    // Explicitly include questionNumber in the projection
     const projection = {
-      questionText: 1,
-      exam: 1,
-      subject: 1,
-      year: 1,
-      difficulty: 1,
-      updatedAt: 1,
-      createdAt: 1,
-      ...(search ? { score: { $meta: 'textScore' } } : {})
+      questionText: 1, exam: 1, subject: 1, year: 1, updatedAt: 1, createdAt: 1, questionNumber: 1,
+      ...(search && isNaN(search) ? { score: { $meta: 'textScore' } } : {})
     };
-
-    // 4) Build sort: textScore when searching, else your chosen sort
-    const sort = search ? { score: { $meta: 'textScore' } } : { [sortBy]: order };
-
-    // 5) Pagination
+    const sort = search && isNaN(search) ? { score: { $meta: 'textScore' } } : { [sortBy]: order };
     const skip = (page - 1) * limit;
 
-    // 6) Query + count
     const [questions, totalCount] = await Promise.all([
       Question.find(filter, projection).sort(sort).skip(skip).limit(limit).lean(),
       Question.countDocuments(filter)
     ]);
 
     const totalPages = Math.ceil(totalCount / limit);
-
-    // 7) Cache headers (optional but good for UX/SEO crawl speed)
-    res.set('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600');
-
-    // 8) Respond
-    res.status(200).json({
-      questions,
-      totalPages,
-      totalCount,
-      currentPage: page
-    });
+    res.status(200).json({ questions, totalPages, totalCount, currentPage: page });
   } catch (error) {
     console.error('Error fetching questions:', error);
     res.status(500).json({ message: 'Server error while fetching questions.' });
   }
 };
 
+/**
+ * GET /api/questions/public
+ * Public endpoint to fetch questions for students (can be simplified)
+ */
+exports.getPublicQuestions = async (req, res) => { // Use exports for CommonJS
+  try {
+    // For now, this sends all questions. This can be updated later for public-side pagination.
+    const questions = await Question.find({}, { correctOption: 0, solutionText: 0 })
+      .sort({ year: -1 })
+      .lean();
+    setCache(res, 120, 600);
+    res.status(200).json(questions);
+  } catch (error) {
+    console.error('Error fetching public questions:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
 
 /**
  * GET /api/questions/:id
- * Single question by ID
+ * Fetches a single question by ID, ensuring all fields are included.
  */
-export const getQuestionById = async (req, res) => {
+exports.getQuestionById = async (req, res) => { // Use exports for CommonJS
   try {
     const { id } = req.params;
-
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: 'Invalid question id' });
     }
 
-    // Projection: only the fields SingleQuestionPage actually renders
-    const projection = {
-      questionText: 1,
-      questionImageURL: 1,
-      explanationText: 1,
-      explanationImageURL: 1,
-      options: 1,            // [{ text, imageURL, isCorrect }]
-      videoURL: 1,
-      exam: 1,
-      subject: 1,
-      year: 1,
-      difficulty: 1,
-      createdAt: 1,
-      updatedAt: 1
-    };
+    // Fetches the full document to ensure all fields like 'topic' and 'questionNumber' are present
+    const question = await Question.findById(id).lean();
 
-    const question = await Question.findById(id, projection).lean();
     if (!question) return res.status(404).json({ message: 'Question not found' });
 
-    setCache(res, 120, 600); // 2 min browser, 10 min CDN/proxy
+    setCache(res, 120, 600);
     res.status(200).json(question);
   } catch (error) {
     console.error('Error fetching question by id:', error);
@@ -119,9 +101,9 @@ export const getQuestionById = async (req, res) => {
 
 /**
  * POST /api/questions
- * Create a question
+ * Creates a new question
  */
-export const createQuestion = async (req, res) => {
+exports.createQuestion = async (req, res) => { // Use exports for CommonJS
   try {
     const questionData = { ...req.body };
     const parsedOptions = JSON.parse(req.body.options || '[]');
@@ -150,10 +132,10 @@ export const createQuestion = async (req, res) => {
 };
 
 /**
- * PATCH /api/questions/:id
- * Update a question
+ * PUT /api/questions/:id
+ * Updates an existing question
  */
-export const updateQuestion = async (req, res) => {
+exports.updateQuestion = async (req, res) => { // Use exports for CommonJS
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -191,8 +173,9 @@ export const updateQuestion = async (req, res) => {
 
 /**
  * DELETE /api/questions/:id
+ * Deletes a question
  */
-export const deleteQuestion = async (req, res) => {
+exports.deleteQuestion = async (req, res) => { // Use exports for CommonJS
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -209,8 +192,9 @@ export const deleteQuestion = async (req, res) => {
 
 /**
  * GET /api/questions/stats
+ * Gets dashboard statistics
  */
-export const getQuestionStats = async (req, res) => {
+exports.getQuestionStats = async (req, res) => { // Use exports for CommonJS
   try {
     const totalQuestions = await Question.estimatedDocumentCount();
     const subjects = await Question.distinct('subject', { subject: { $ne: null, $ne: '' } });
@@ -229,14 +213,14 @@ export const getQuestionStats = async (req, res) => {
 
 /**
  * GET /api/questions/filters
- * Unique values used by the UI’s filter controls
+ * Gets unique values for filter dropdowns
  */
-export const getFilterOptions = async (req, res) => {
+exports.getFilterOptions = async (req, res) => { // Use exports for CommonJS
   try {
     const subjects = await Question.distinct('subject', { subject: { $ne: null, $ne: '' } });
     const exams = await Question.distinct('exam', { exam: { $ne: null, $ne: '' } });
     const years = await Question.distinct('year', { year: { $ne: null } });
-    setCache(res, 3600, 7200); // 1h browser, 2h edge
+    setCache(res, 3600, 7200);
     res.status(200).json({
       subjects: subjects.sort(),
       exams: exams.sort(),
@@ -250,9 +234,9 @@ export const getFilterOptions = async (req, res) => {
 
 /**
  * GET /api/questions/:id/related
- * Based on same topic + exam; exclude current
+ * Gets related questions based on topic and exam
  */
-export const getRelatedQuestions = async (req, res) => {
+exports.getRelatedQuestions = async (req, res) => { // Use exports for CommonJS
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -264,7 +248,7 @@ export const getRelatedQuestions = async (req, res) => {
 
     const related = await Question.find(
       { topic: original.topic, exam: original.exam, _id: { $ne: id } },
-      { questionText: 1, exam: 1, subject: 1, topic: 1 } // projection
+      { questionText: 1, exam: 1, subject: 1, topic: 1 }
     )
       .limit(5)
       .lean();
@@ -273,24 +257,6 @@ export const getRelatedQuestions = async (req, res) => {
     res.status(200).json(related);
   } catch (error) {
     console.error('Error fetching related questions:', error);
-    res.status(500).json({ message: 'Server Error' });
-  }
-};
-
-/**
- * GET /api/public-questions
- * (If you truly need all) — but keep projection and sort.
- */
-export const getPublicQuestions = async (req, res) => {
-  try {
-    const questions = await Question.find({}, { questionText: 1, subject: 1, exam: 1, year: 1, updatedAt: 1 })
-      .sort({ year: -1 })
-      .limit(1000)     // protect against unbounded result sets
-      .lean();
-    setCache(res, 120, 600);
-    res.status(200).json(questions);
-  } catch (error) {
-    console.error('Error fetching public questions:', error);
     res.status(500).json({ message: 'Server Error' });
   }
 };

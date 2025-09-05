@@ -9,6 +9,7 @@ import SingleQuestionPage from './pages/SingleQuestionPage';
 import ReportIssuePage from './pages/ReportIssuePage';
 import ArticleListPage from './pages/ArticleListPage';
 import SinglePostPage from './pages/SinglePostPage';
+import ResultsPage from './pages/ResultsPage';
 // --- Import Layout Components ---
 import PublicLayout from './components/PublicLayout';
 
@@ -20,6 +21,7 @@ function App() {
             {/* === Public Routes (for students) === */}
             <Route path="/" element={<PublicLayout />}>
                 <Route index element={<HomePage />} />
+                <Route path="/results" element={<ResultsPage />} />
                 <Route path="questions" element={<QuestionLibraryPage />} />
                 <Route path="question/:id" element={<SingleQuestionPage />} />
                 <Route path="report-issue/:id" element={<ReportIssuePage />} />

@@ -71,6 +71,7 @@ const Header = () => {
             <div className={styles.dropdownMenu}>
               <a href="https://maarulaclasses.classx.co.in/new-courses" target="_blank" rel="noopener noreferrer">Our Courses</a>
               <a href="https://maarulaclasses.classx.co.in/test-series" target="_blank" rel="noopener noreferrer">Test Series</a>
+              <Link to="/results">Our Results</Link>
               <a href="https://www.maarula.in/about" target="_blank" rel="noopener noreferrer">About Us</a>
             </div>
           </div>
@@ -94,6 +95,7 @@ const Header = () => {
           <MobileNavLink to="/articles">Latest Update</MobileNavLink>
           <a href="https://maarulaclasses.classx.co.in/new-courses" target="_blank" rel="noopener noreferrer" onClick={closeMobileMenu}>Our Courses</a>
           <a href="https://maarulaclasses.classx.co.in/test-series" target="_blank" rel="noopener noreferrer" onClick={closeMobileMenu}>Test Series</a>
+          <Link to="/results">Our Results</Link>
           <a href="https://www.maarula.in/about" target="_blank" rel="noopener noreferrer" onClick={closeMobileMenu}>About Us</a>
           <a href="https://www.maarula.in/contact-us" target="_blank" rel="noopener noreferrer" onClick={closeMobileMenu}>Contact Us</a>
         </nav>
