@@ -143,7 +143,7 @@ const HomePage = () => {
       {/* 2) SEO-rich PYQ intro (single H1 on page) */}
       <section className={styles.pyqIntro}>
         <div className={styles.pyqContent}>
-          <h1>NIMCET & CUET-PG Previous Year Questions — with Solutions</h1>
+          <h1>Mathem Solvex has all that you need for your preparetions|NIMCET & CUET-PG Previous Year Questions — with Solutions</h1>
           <p>
             <strong>Mathem Solvex by Maarula Classes</strong> is India’s most focused
             PYQ (Previous Year Questions) bank for MCA entrances. Our platform brings
@@ -207,7 +207,7 @@ const HomePage = () => {
 
       {/* 4) Results / Student cards */}
       <section className={styles.resultsSection}>
-                <h1 className={styles.sectionTitle}>Meet Our 2025 Stars</h1>
+                <h2 className={styles.sectionTitle}>Meet Our 2025 Stars</h2>
                 <p className={styles.sectionSubtitle}>A preview of our top rankers from the latest batch.</p>
                 <div className={styles.resultsGrid}>
                     {homepageStudents.map(student => (
