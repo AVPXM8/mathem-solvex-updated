@@ -1,5 +1,13 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/question/:id",
+      "destination": "/questions/:id",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/robots.txt",
@@ -9,10 +17,18 @@
       "source": "/sitemap.xml",
       "destination": "https://mathemsolvex.onrender.com/sitemap.xml"
     },
+
+   
     {
-      "source": "/question/:id",
-      "destination": "/api/og-question?id=:id"
+      "source": "/questions/:id",
+      "destination": "/api/og-questions?id=:id"
     },
+    {
+      "source": "/articles/:slug",
+      "destination": "/api/og-articles?slug=:slug"
+    },
+
+   
     {
       "source": "/((?!api|.*\\..*).*)",
       "destination": "/index.html"
