@@ -2,8 +2,7 @@ import React from 'react';
 import Slider from 'react-slick';
 import { summaryBanners } from '/src/data/students';
 
-// Import slick-carousel styles
-import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 import styles from './SuccessCarousel.module.css';
@@ -17,15 +16,26 @@ const SuccessCarousel = () => {
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 4000,
-    pauseOnHover: true
+    pauseOnHover: true,
+    // allow swipe on mobile; prevents tap stalls
+    swipeToSlide: true,
+    arrows: false
   };
 
   return (
     <div className={styles.carouselContainer}>
       <Slider {...settings}>
-        {summaryBanners.map(banner => (
+        {summaryBanners.map((banner) => (
           <div key={banner.id}>
-            <img src={banner.imageUrl} alt={banner.altText} className={styles.bannerImage} />
+            <div className={styles.aspectBox}>
+              <img
+                src={banner.imageUrl}
+                alt={banner.altText}
+                className={styles.bannerImage}
+                loading="eager"
+                decoding="async"
+              />
+            </div>
           </div>
         ))}
       </Slider>

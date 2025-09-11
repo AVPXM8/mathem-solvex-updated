@@ -1,66 +1,58 @@
-.scrollerContainer {
-  width: 100%;
-  overflow: hidden;
-  -webkit-mask: linear-gradient(90deg, transparent, white 20%, white 80%, transparent);
-  mask: linear-gradient(90deg, transparent, white 20%, white 80%, transparent);
+.scrollerContainer{
+  width:100%;
+  overflow:hidden;         /* no fade mask; crisp edges */
 }
 
-.scroller {
-  display: flex;
-  gap: 20px;
-  width: max-content;
-  animation: scroll 60s linear infinite;
+/* Smooth continuous marquee with GPU-friendly transform */
+.scroller{
+  display:flex;
+  gap:20px;
+  width:max-content;
+  will-change:transform;
+  animation:marquee 48s linear infinite;    /* slower for readability */
 }
 
-.scroller:hover {
-  animation-play-state: paused;
+/* Pause on hover or when any child gains focus (keyboard users) */
+.scroller:hover,
+.scroller:focus-within{
+  animation-play-state:paused;
 }
 
-@keyframes scroll {
-  to {
-    transform: translate(calc(-50% - 10px * var(--item-count)));
-  }
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .scroller{ animation:none; }
 }
 
-.card {
-  position: relative;
-  width: 250px;
-  height: 350px;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  flex-shrink: 0;
-  transition: transform 0.3s ease;
+@keyframes marquee{
+  0%   { transform:translateX(0); }
+  100% { transform:translateX(-50%); }  /* because array duplicated */
 }
 
-.card:hover {
-    transform: scale(1.05);
+.card{
+  position:relative;
+  width:250px;
+  height:350px;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 10px 20px rgba(0,0,0,.1);
+  flex-shrink:0;
+  transition:transform .25s ease;
+}
+.card:hover{ transform:translateY(-6px) scale(1.03); }
+
+.cardImage{
+  width:100%; height:100%; object-fit:cover; display:block;
 }
 
-.cardImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.cardOverlay{
+  position:absolute; inset:auto 0 0 0;
+  background:linear-gradient(to top, rgba(0,0,0,.8), transparent);
+  padding:20px 15px 14px;
+}
+.cardName{
+  color:#fff; font-size:1.1rem; font-weight:600; margin:0;
+  text-shadow:1px 1px 3px rgba(0,0,0,.5);
 }
 
-.cardOverlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-  padding: 20px 15px 15px;
-}
-
-.cardName {
-  color: white;
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin: 0;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-}
-
-/* We need to set the item count for the animation */
-:root {
-  --item-count: 27; /* The number of unique items */
-}
+/* Keep animation distance in sync with duplicated list */
+:root{ --item-count: 54; } /* fallback; real value injected inline */

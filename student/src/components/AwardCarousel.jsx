@@ -30,19 +30,17 @@ const awardWinners = [
   { name: 'Vishal Singh', imageUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1754885998/VISHAL_SINGH_vzhoiu.jpg' },
 ];
 
-
-// We duplicate the array to create a seamless loop effect
 const allImages = [...awardWinners, ...awardWinners];
 
 const AwardCarousel = () => {
   return (
-    <div className={styles.scrollerContainer}>
+    <div className={styles.scrollerContainer} style={{ '--item-count': allImages.length }}>
       <div className={styles.scroller}>
         {allImages.map((winner, index) => (
           <div className={styles.card} key={index}>
-            <img 
-              src={winner.imageUrl} 
-              alt={`Award winner ${winner.name}`} 
+            <img
+              src={winner.imageUrl}
+              alt={`Award winner ${winner.name}`}
               className={styles.cardImage}
               loading="lazy"
             />
@@ -55,4 +53,5 @@ const AwardCarousel = () => {
     </div>
   );
 };
+
 export default AwardCarousel;
