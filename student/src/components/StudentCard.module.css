@@ -1,72 +1,55 @@
-/* StudentCard.module.css */
-
-.studentCard {
-  background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  overflow: hidden; /* Crucial to prevent image/content overflow */
-  text-align: center;
-  display: flex; /* Use flexbox to organize image and info vertically */
-  flex-direction: column;
-  height: 100%; /* Make cards fill their grid space */
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+:root{
+  --brand-orange:#F97316;
+  --brand-orange-dark:#EA580C;
+  --brand-orange-light:#FFEDD5;
+  --ink-900:#0f172a;
+  --ink-600:#475569;
+  --line:#e2e8f0;
+  --card:#fff;
 }
 
-.studentCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+.studentCard{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 8px 24px rgba(15,23,42,.06);
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+.studentCard:hover{
+  transform: translateY(-3px);
+  box-shadow:0 14px 28px rgba(15,23,42,.08);
+  border-color: rgba(249,115,22,.45);
 }
 
-/* Image Container and Image Styling */
-.studentCard img {
-  width: 100%;
-  height: 280px; /* Fixed height for consistent look across all cards */
-  object-fit: cover; /* This will crop the image to fit, maintaining aspect ratio */
-  object-position: top center; /* Focus on the top part (usually face) */
-  flex-shrink: 0; /* Prevent image from shrinking if content pushes */
-  border-bottom: 1px solid #e2e8f0; /* Subtle separator */
+.media{ aspect-ratio: 1/1; background:#f8fafc; }
+.studentImage{
+  width:100%; height:100%; object-fit:cover; display:block;
+  contain-intrinsic-size: 320px 320px;
 }
 
-/* Student Information Styling */
-.studentInfo {
-  padding: 20px;
-  flex-grow: 1; /* Allow info section to take available space */
-  display: flex; /* Use flexbox for vertical alignment of text */
-  flex-direction: column;
-  justify-content: flex-end; /* Align text to the bottom of the card content area */
-  align-items: center; /* Center items horizontally within info */
+.studentInfo{
+  padding:14px 14px 16px;
+  display:flex; flex-direction:column; gap:6px;
 }
+.name{ font-size:1.05rem; font-weight:800; color:var(--ink-900); margin:0; line-height:1.3; }
 
-.studentInfo h3 {
-  font-size: 1.3rem; /* Slightly larger name */
-  margin: 0 0 8px 0; /* Space below name */
-  color: #1e293b;
-  font-weight: 700; /* Bolder name */
-  line-height: 1.3;
+.badge{
+  align-self:flex-start;
+  background:var(--brand-orange-light);
+  color:var(--ink-900);
+  border:1px solid rgba(249,115,22,.45);
+  padding:4px 8px;
+  border-radius:999px;
+  font-weight:700;
+  font-size:.82rem;
 }
-
-.studentInfo span {
-  font-size: 1.05rem; /* Slightly larger achievement */
-  color: #4f46e5; /* Primary color for achievement */
-  font-weight: 800; /* Even bolder achievement */
-  display: block; /* Ensures achievement is on its own line */
-  margin-bottom: 10px; /* Space below achievement */
-}
-
-.examTag {
-  display: inline-block;
-  background-color: #eef2ff; /* Lighter primary color background */
-  color: #4338ca; /* Darker primary color text */
-  padding: 6px 14px; /* More padding */
-  border-radius: 25px; /* More rounded */
-  font-size: 0.85rem; /* Slightly larger font */
-  font-weight: 600; /* Bolder font */
-  margin-top: auto; /* Push to the bottom of the studentInfo if space available */
-  align-self: center; /* Center horizontally within flex container */
-  white-space: nowrap; /* Prevent tag from wrapping */
-}
-
-/* Optional: Add a subtle overlay on hover to the image */
-.studentCard img:hover {
-  filter: brightness(0.95); /* Slightly darken image on hover */
+.examTag{
+  align-self:flex-start;
+  background:#fff;
+  color:var(--ink-600);
+  border:1px dashed var(--line);
+  padding:3px 8px;
+  border-radius:999px;
+  font-size:.78rem;
 }

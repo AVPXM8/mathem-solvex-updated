@@ -64,6 +64,11 @@ export const students = [
 // Data for the top summary banners
 export const summaryBanners = [
   {
+    id: 'banner-award-prize test-3',
+    altText: 'NIMCET 2026 Prize test 3 winners',
+    imageUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1757306879/test_3_sakeui.jpg'
+  },
+  {
     id: 'banner-award',
     altText: 'NIMCET 2025 selected students from Maarula Classes',
     imageUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1755922118/19_-_08_-_25_3_v5u2bj.jpg'

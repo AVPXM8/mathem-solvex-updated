@@ -3,19 +3,25 @@ import styles from './StudentCard.module.css';
 
 const StudentCard = ({ student }) => {
   return (
-    <div className={styles.studentCard}> {/* This should match the .studentCard from HomePage.module.css */}
-      <img
-        src={student.photoUrl}
-        alt={`${student.name} - ${student.exam} ${student.year} ${student.achievement}`}
-        loading="lazy"
-        className={styles.studentImage} 
-      />
+    <article className={styles.studentCard}>
+      <div className={styles.media}>
+        <img
+          src={student.photoUrl}
+          alt={`${student.name} — ${student.exam || ''} ${student.year || ''} ${student.achievement || ''}`.trim()}
+          loading="lazy"
+          decoding="async"
+          width="320"
+          height="320"
+          className={styles.studentImage}
+        />
+      </div>
+
       <div className={styles.studentInfo}>
-        <h3>{student.name}</h3>
-        {student.achievement && <span>{student.achievement}</span>}
+        <h3 className={styles.name}>{student.name}</h3>
+        {student.achievement && <span className={styles.badge}>{student.achievement}</span>}
         {student.exam && <span className={styles.examTag}>{student.exam}</span>}
       </div>
-    </div>
+    </article>
   );
 };
 

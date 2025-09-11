@@ -1,17 +1,21 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
-    { 
-      "source": "/robots.txt", 
-      "destination": "https://mathemsolvex.onrender.com/robots.txt" 
+    {
+      "source": "/robots.txt",
+      "destination": "https://mathemsolvex.onrender.com/robots.txt"
     },
-    { 
-      "source": "/sitemap.xml", 
-      "destination": "https://mathemsolvex.onrender.com/sitemap.xml" 
+    {
+      "source": "/sitemap.xml",
+      "destination": "https://mathemsolvex.onrender.com/sitemap.xml"
     },
-    { 
-      "source": "/((?!api|.*\\..*).*)", 
-      "destination": "/index.html" 
+    {
+      "source": "/question/:id",
+      "destination": "/api/og-question?id=:id"
+    },
+    {
+      "source": "/((?!api|.*\\..*).*)",
+      "destination": "/index.html"
     }
   ]
 }
