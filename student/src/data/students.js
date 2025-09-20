@@ -3,14 +3,7 @@ export const students = [
   { id: '25-01', name: 'Akbar Alam', achievement: 'AIR-68', exam: 'NIMCET', year: 2025, photoUrl: 'https://res.cloudinary.com/dwmj6up6j/image/upload/v1752548253/AKBAR_ALAM_AIR_68_qsc8xv.jpg' },
   { id: '25-02', name: 'Ankit Kumar', achievement: 'AIR-92', exam: 'NIMCET', year: 2025, photoUrl: 'https://res.cloudinary.com/dwmj6up6j/image/upload/v1752548268/ankit_singh_92_dbcaif.jpg' },
    { id: '25-03', name: 'Harshit Prajapati', achievement: 'AIR-03', exam: 'CUET-PG', year: 2025, photoUrl: 'https://res.cloudinary.com/dwmj6up6j/image/upload/v1752548275/HARSHIT_PRAJAPATI_254_qeldvq.jpg' },
-  // { id: '25-04', name: 'Arshi Anam', achievement: 'AIR-1179', exam: 'NIMCET', year: 2025, photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1753716097804/ARSHI_ANAM_1179.jpg' },
-  // { id: '25-05', name: 'Deepak', achievement: 'AIR-305', exam: 'NIMCET', year: 2025, photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1753716097804/DEEPAK_(305).jpg' },
-  // { id: '25-06', name: 'Divansh', achievement: 'AIR-661', exam: 'NIMCET', year: 2025, photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1753716097804/DIVANSH_(661).jpg' },
-  // { id: '25-07', name: 'Divyajeet Singh', achievement: 'AIR-576', exam: 'NIMCET', year: 2025, photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1753716097804/DIVYAJEET_SINGH_(576).jpg' },
-  // { id: '25-08', name: 'Divyanka Lakhwani', achievement: 'AIR-480', exam: 'NIMCET', year: 2025, photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1753716097804/DIVYANKA_LAKHWANI_(480).jpg' },
-  // { id: '25-09', name: 'Hardeep Singh Bhora', achievement: 'AIR-217', exam: 'NIMCET', year: 2025, photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1753716097804/HARDEEP_SINGH_BHORA_(217).jpg' },
-  // { id: '25-10', name: 'Harsh Vardhan', achievement: 'AIR-640', exam: 'NIMCET', year: 2025, photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1753716097804/HARSH_VARDHAN_(640).jpg' },
-
+  
   // --- 2024 Batch ---
   { id: '24-01', name: 'Anshika Dwivedi', year: 2024, exam: 'CUET-PG', photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1756347459/ANSHIKA_DWIVEDI_qbyj3v.jpg' },
   { id: '24-02', name: 'Anshika Sachan', year: 2024, exam: 'CUET-PG', photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1756347461/ANSHIKA_SACHAN_kjwy3u.jpg' },
@@ -66,14 +59,9 @@ export const summaryBanners = [
   {
     id: 'banner-award-prize test-3',
     altText: 'NIMCET 2026 Prize test 3 winners',
-    imageUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1757306879/test_3_sakeui.jpg'
+    imageUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1757999703/test_5_kor9il.jpg'
   },
-  {
-    id: 'banner-award',
-    altText: 'NIMCET 2025 selected students from Maarula Classes',
-    imageUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1755922118/19_-_08_-_25_3_v5u2bj.jpg'
-  },
-  {
+    {
     id: 'banner-nimcet',
     altText: 'NIMCET 2026 winner students in prize tests from Maarula Classes',
     imageUrl: 'https://res.cloudinary.com/dwmj6up6j/image/upload/v1752548232/NIMCET_k5sxjr.jpg'
@@ -94,4 +82,26 @@ export const summaryBanners = [
     altText: 'AMU, VIT, MAH-CET 2025 selected students from Maarula Classes',
     imageUrl: 'https://res.cloudinary.com/dwmj6up6j/image/upload/v1752548233/AMU_MAH-CET_VIT_tfbdco.jpg'
   }
+];
+// Placed students (no year constraints). Optional fields (company, role, yearPlaced) can be added later.
+export const placements = [
+  { id: 'plc-001', name: 'GAURAV MISHRA', photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1757645274/GAURAV_MISHRA_gpvfzh.jpg' },
+  { id: 'plc-002', name: 'KARTIK GUPTA', photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1757645273/KARTIK_GUPTA_dahlyb.jpg' },
+  { id: 'plc-003', name: 'CHAITNYA GUPTA', photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1757645273/chaitnya_gupta_jqvjii.jpg' },
+  { id: 'plc-004', name: 'RAVI RATHORE', photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1757645275/ravi_rathoure_rorcxt.jpg' },
+  { id: 'plc-005', name: 'MOHD MOHSIN', photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1757645274/mohd_mohsin_nyrimo.jpg' },
+  { id: 'plc-006', name: 'RATNAM GUPTA', photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1757645274/ratnam_gupta_arcqua.jpg' },
+  { id: 'plc-007', name: 'SAHITYA GUPTA', photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1757645278/SAHITYA_GUPTA_y76xgg.jpg' },
+  { id: 'plc-008', name: 'SANGEET KUMAR', photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1757645278/sangeet_kumar_bqumlq.jpg' },
+  { id: 'plc-009', name: 'SHAIFALI MISHRA', photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1757645278/shaifali_mishra_bfewx0.jpg' },
+  { id: 'plc-010', name: 'VIJAY RAJPUT', photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1757645279/vijay_rajput_pb0euh.jpg' },
+  { id: 'plc-011', name: 'SHIVAM TIWARI', photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1757645279/SHIVAM_TIWARI_zozqmc.jpg' },
+  { id: 'plc-012', name: 'VINAY SINGH BHADAURIYA', photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1757645279/vinay_singh_bhadauria_mymgjj.jpg' },
+  { id: 'plc-013', name: 'ABHISHEK JAISWAL', photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1757645283/ABHISHEK_JAISWAL_lrhm9e.jpg' },
+  { id: 'plc-014', name: 'ABHISHEK MISHRA', photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1757645317/ABHISHEK_MISHRA_s1x1ki.jpg' },
+  { id: 'plc-015', name: 'ARVIND KUMAR', photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1757645318/Arvind_kumar_crqit6.jpg' },
+  { id: 'plc-016', name: 'ANURAG MISHRA', photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1757645318/anurag_mishra_d8srel.jpg' },
+  { id: 'plc-017', name: 'AYUSHI VERMA', photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1757645319/ayushi_verma_qfobys.jpg' },
+  { id: 'plc-018', name: 'AYUSHI SACHAN', photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1757645323/AYUSHI_SACHAN_lo0b1s.jpg' },
+  { id: 'plc-019', name: 'AKANKSHA DIXIT', photoUrl: 'https://res.cloudinary.com/dcaq1inz0/image/upload/v1757645323/akanksha_dixit_rts0ux.jpg' }
 ];

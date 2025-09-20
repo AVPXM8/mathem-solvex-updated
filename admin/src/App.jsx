@@ -22,7 +22,7 @@ const RootRedirect = () => {
     }
     // If a token exists, the user is logged in, so go to the dashboard.
     // Otherwise, go to the login page.
-    return token ? <Navigate to="/dashboard" /> : <Navigate to="/login" />;
+    return token ? <Navigate to="/admin/dashboard" /> : <Navigate to="/login" />;
 };
 
 const ProtectedRoute = ({ children }) => {
