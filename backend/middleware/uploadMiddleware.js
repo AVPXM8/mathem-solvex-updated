@@ -1,9 +1,6 @@
 const multer = require('multer');
 const path = require('path');
-
-// Set up storage engine for multer (this part is correct)
 const storage = multer.diskStorage({});
-
 
 function checkFileType(file, cb) {
     const filetypes = /jpeg|jpg|png|gif/;

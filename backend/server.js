@@ -13,9 +13,9 @@ const helmet = require('helmet');
 
 // Local Modules
 const { generateSitemap } = require('./controllers/sitemapController');
-const initializeQuestionNumberCounter = require('./utils/counterInit'); // *** ADD THIS LINE ***
+const initializeQuestionNumberCounter = require('./utils/counterInit'); 
 
-// Ensure Mongoose models are registered for operations like syncIndexes
+
 require('./models/Question');
 require('./models/Post');
 require('./models/Counter');
@@ -128,15 +128,10 @@ const startServer = async () => {
         // Ensure Mongoose text indexes are created on startup
         await mongoose.model('Question').syncIndexes();
         await mongoose.model('Post').syncIndexes();
-
         console.log('✅ Connected to MongoDB & indexes synced');
-
-        // *** ADD THE COUNTER INITIALIZATION HERE ***
         console.log('Initializing/Correcting questionNumber counter...');
         await initializeQuestionNumberCounter();
         console.log('QuestionNumber counter initialization/correction complete.');
-        // ********************************************
-
         app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
     } catch (err) {
         console.error('❌ Could not connect to MongoDB. Exiting...');

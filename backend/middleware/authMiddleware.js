@@ -1,5 +1,3 @@
-// middleware/authMiddleware.js - FINAL CLEAN VERSION
-
 const jwt = require('jsonwebtoken');
 const AdminUser = require('../models/AdminUser');
 

@@ -28,7 +28,7 @@ const DashboardPage = () => {
                 // Fetch stats and recent posts at the same time
                 const [statsRes, postsRes] = await Promise.all([
                     api.get('/questions/stats'),
-                    api.get('/posts?limit=5') // Assumes your API supports a limit query
+                    api.get('/posts?limit=5') 
                 ]);
                 setStats(statsRes.data);
                 setRecentPosts(postsRes.data);
