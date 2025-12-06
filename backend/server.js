@@ -64,7 +64,7 @@ app.use(cors(corsOptions));
 
 app.use(express.json({ limit: '1mb' }));
 
-app.use('/api', (req, res, next) => {
+app.use('/api/admin', (req, res, next) => {
     res.set('X-Robots-Tag', 'noindex');
     next();
 });
