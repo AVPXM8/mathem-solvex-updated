@@ -69,6 +69,7 @@ const Header = () => {
           <div className={styles.dropdown}>
             <span className={styles.dropdownToggle}>Resources <ChevronDown size={16} /></span>
             <div className={styles.dropdownMenu}>
+              <Link to="/resources" className={styles.highlightLink}>PYQ PDF Downloads</Link>
               <a href="https://maarulaclasses.classx.co.in/new-courses" target="_blank" rel="noopener noreferrer">Our Courses</a>
               <a href="https://maarulaclasses.classx.co.in/test-series" target="_blank" rel="noopener noreferrer">Test Series</a>
               <Link to="/results">Our Results</Link>
@@ -92,6 +93,7 @@ const Header = () => {
         <nav className={styles.mobileNav}>
           <MobileNavLink to="/">Home</MobileNavLink>
           <MobileNavLink to="/questions">Previous Year Questions</MobileNavLink>
+          <MobileNavLink to="/resources">PYQ PDF Downloads</MobileNavLink>
           <MobileNavLink to="/articles">Latest Update</MobileNavLink>
           <a href="https://maarulaclasses.classx.co.in/new-courses" target="_blank" rel="noopener noreferrer" onClick={closeMobileMenu}>Our Courses</a>
           <a href="https://maarulaclasses.classx.co.in/test-series" target="_blank" rel="noopener noreferrer" onClick={closeMobileMenu}>Test Series</a>
