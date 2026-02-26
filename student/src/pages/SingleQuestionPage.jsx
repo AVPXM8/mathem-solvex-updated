@@ -8,6 +8,7 @@ import useMathJax from '../hooks/useMathJax';
 import MathPreview from '../components/MathPreview';
 import { reRenderMathJax } from '../utils/mathjax';
 import styles from './SingleQuestionPage.module.css';
+import AITutor from '../components/AITutor';
 
 /* ----------------------------- helpers ----------------------------- */
 const toPlainText = (s = '') => {
@@ -285,7 +286,7 @@ export default function SingleQuestionPage() {
                 decoding="async"
               />
             )}
-
+            <AITutor questionId={question._id} />
             <h3 className={styles.optionsHeader}>Choose the correct answer:</h3>
 
             <div className={styles.optionsGrid}>

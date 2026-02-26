@@ -10,6 +10,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const compression = require('compression');
 const helmet = require('helmet');
+const aiRoutes = require('./routes/aiRoutes');
 
 // Local Modules
 const { generateSitemap } = require('./controllers/sitemapController');
@@ -94,6 +95,7 @@ app.use('/api/questions', require('./routes/questionRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/reports', require('./routes/reportRoutes'));
 app.use('/api/posts', require('./routes/postRoutes'));
+app.use('/api/ai', require('./routes/aiRoutes'));
 
 app.get('/api/health', (req, res) => {
     res.set('Cache-Control', 'no-store');

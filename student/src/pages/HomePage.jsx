@@ -1,4 +1,4 @@
-// HomePage.jsx — final, using your new orange theme and tidy typography
+
 import React, { lazy, Suspense, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";

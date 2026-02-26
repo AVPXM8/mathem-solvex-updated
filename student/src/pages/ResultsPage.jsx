@@ -18,8 +18,6 @@ const siteUrl  = 'https://question.maarula.in'; // change if your domain differs
 const pagePath = '/results';
 const logoUrl  = 'https://res.cloudinary.com/dwmj6up6j/image/upload/v1752687380/rqtljy0wi1uzq3itqxoe.png';
 
-// Optional Cloudinary helper (keeps your current URLs working as-is)
-// const cdn = (url, w=480) => url.replace('/upload/', `/upload/f_auto,q_auto,dpr_auto,w_${w}/`);
 
 export default function ResultsPage() {
   /* ---------- Group students by year ---------- */
@@ -261,7 +259,7 @@ export default function ResultsPage() {
 
         {/* Keep the name ONLY for SEO/screen-readers, visually hidden */}
         <h3 className={styles.srOnly} itemProp="name">{p.name}</h3>
-        {/* If you later add company/role, you can show compact meta here:
+        {/* If we later add company/role, we can show compact meta here:
         <div className={styles.metaCompact}>
           {p.company && <span>{p.company}</span>}
           {p.role && <span>• {p.role}</span>}

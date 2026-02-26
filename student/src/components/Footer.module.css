@@ -1,4 +1,4 @@
-/* Footer.module.css - FINAL VERSION */
+/* Footer.module.css  */
 .footer {
   background-color: #0f172a;
   color: #94a3b8;
@@ -140,9 +140,9 @@
   background-color: #4338ca;
 }
 
-/* ========================================= */
-/* --- MOBILE RESPONSIVE STYLES (THE FIX) --- */
-/* ========================================= */
+
+/* --- MOBILE RESPONSIVE STYLES --- */
+
 @media (max-width: 768px) {
   .footerGrid {
     /* Creates two equal-width columns on all mobile/tablet screens */
@@ -150,4 +150,25 @@
     gap: 30px 20px; /* Vertical and horizontal gap */
     text-align: left; /* Aligns all text to the left as in your screenshot */
   }
+}
+
+
+
+/* --- Developer Credit --- */
+.developerCredit {
+  margin-top: 12px;
+  font-size: 0.9rem;
+  color: #64748b; 
+}
+
+.developerLink {
+  color: #94a3b8; 
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.developerLink:hover {
+  color: #fff; 
+  text-decoration: underline;
 }
