@@ -1,17 +1,55 @@
-.card {
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+:root{
+  --brand-orange:#F97316;
+  --brand-orange-dark:#EA580C;
+  --brand-orange-light:#FFEDD5;
+  --ink-900:#0f172a;
+  --ink-600:#475569;
+  --line:#e2e8f0;
+  --card:#fff;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+.studentCard{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 8px 24px rgba(15,23,42,.06);
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+.studentCard:hover{
+  transform: translateY(-3px);
+  box-shadow:0 14px 28px rgba(15,23,42,.08);
+  border-color: rgba(249,115,22,.45);
 }
 
-.posterImage {
-    display: block;
-    width: 100%;
-    height: auto;
+.media{ aspect-ratio: 1/1; background:#f8fafc; }
+.studentImage{
+  width:100%; height:100%; object-fit:cover; display:block;
+  contain-intrinsic-size: 320px 320px;
+}
+
+.studentInfo{
+  padding:14px 14px 16px;
+  display:flex; flex-direction:column; gap:6px;
+}
+.name{ font-size:1.05rem; font-weight:800; color:var(--ink-900); margin:0; line-height:1.3; }
+
+.badge{
+  align-self:flex-start;
+  background:var(--brand-orange-light);
+  color:var(--ink-900);
+  border:1px solid rgba(249,115,22,.45);
+  padding:4px 8px;
+  border-radius:999px;
+  font-weight:700;
+  font-size:.82rem;
+}
+.examTag{
+  align-self:flex-start;
+  background:#fff;
+  color:var(--ink-600);
+  border:1px dashed var(--line);
+  padding:3px 8px;
+  border-radius:999px;
+  font-size:.78rem;
 }

@@ -96,6 +96,17 @@ const Footer = () => {
       
       <div className={styles.footerBottom}>
         <p>© {new Date().getFullYear()} Maarula Classes. All Rights Reserved.</p>
+        <p className={styles.developerCredit}>
+          Developed and maintained by{' '}
+          <a 
+            href="https://linkedin.com/in/vivek33pal" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className={styles.developerLink}
+          >
+            Vivek kumar
+          </a>
+        </p>
       </div>
       <BackToTopButton />
     </footer>

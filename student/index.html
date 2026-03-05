@@ -2,24 +2,75 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Maarula Classes</title>
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Maarula Classes" />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href="https://question.maarula.in/" />
+
+    <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="//res.cloudinary.com" />
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet" />
+
+    <title>Mathem Solvex | NIMCET & MCA PYQs with Solutions & Exam Updates</title>
+    <meta name="description" content="Mathem Solvex by Maarula Classes is India’s complete MCA entrance prep platform. Access NIMCET and CUET PG previous year questions, solutions, and the latest updates for MCA aspirants." />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Mathem Solvex" />
+    <meta property="og:url" content="https://question.maarula.in/" />
+    <meta property="og:title" content="Mathem Solvex | MCA Entrance PYQs & Solutions" />
+    <meta property="og:description" content="Practice NIMCET & CUET PG previous year questions with solutions, video explanations, and the latest MCA exam updates." />
+    <meta property="og:image" content="https://res.cloudinary.com/dwmj6up6j/image/upload/v1752687380/rqtljy0wi1uzq3itqxoe.png" />
+    <meta property="og:image:alt" content="Mathem Solvex by Maarula Classes Logo" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Mathem Solvex | NIMCET & MCA PYQs with Solutions" />
+    <meta name="twitter:description" content="All PYQs, solved papers, video explanations, articles, and exam updates for MCA & NIMCET prep." />
+    <meta name="twitter:image" content="https://res.cloudinary.com/dwmj6up6j/image/upload/v1752687380/rqtljy0wi1uzq3itqxoe.png" />
+
+    <meta name="google-site-verification" content="dyhhcuWG_4e0cByNd_RKXKsAldmz2g0kcK2a_yCKvlE" />
     <script>
       window.MathJax = {
-        tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']]
-        },
-        svg: {
-          fontCache: 'global'
-        }
+        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+        svg: { fontCache: 'global' }
       };
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <meta name="google-site-verification" content="dyhhcuWG_4e0cByNd_RKXKsAldmz2g0kcK2a_yCKvlE" />
-  </head>
+
+    </head>
   <body>
+    <div id="loading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: Inter, sans-serif; background-color: #f9fafb; text-align: center;">
+      <img src="/maarulalogo.png" alt="Loading Mathem Solvex" width="80" height="80" style="margin-bottom: 1rem;" />
+      <div style="font-size: 1.5rem; font-weight: 700;">Mathem Solvex by Maarula Classes</div>
+      <p style="color: #4b5563;">Loading the ultimate MCA entrance prep platform...</p>
+    </div>
+    
     <div id="root"></div>
+
+    <noscript>
+      <div style="text-align: center; padding: 2rem; font-family: sans-serif; background-color: #fef2f2; color: #b91c1c;">
+        <h1>JavaScript is required to use Mathem Solvex</h1>
+        <p>Please enable JavaScript to access our interactive question bank, video solutions, and articles.</p>
+      </div>
+    </noscript>
+
     <script type="module" src="/src/main.jsx"></script>
+
+    <script>
+      const root = document.getElementById('root');
+      const loading = document.getElementById('loading');
+      // Use a MutationObserver to hide the loader as soon as React renders anything.
+      const observer = new MutationObserver(() => {
+        if (root.childElementCount > 0) {
+          if (loading) loading.style.display = 'none';
+          observer.disconnect();
+        }
+      });
+      observer.observe(root, { childList: true });
+    </script>
   </body>
 </html>

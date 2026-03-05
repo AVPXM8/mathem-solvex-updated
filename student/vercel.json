@@ -1,8 +1,13 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/robots.txt",  "destination": "https://mathemsolvex.onrender.com/robots.txt" },
+    { "source": "/sitemap.xml", "destination": "https://mathemsolvex.onrender.com/sitemap.xml" },
+
+    { "source": "/questions/:id", "destination": "/index.html" },
+    { "source": "/question/:id",  "destination": "/index.html" }, 
+    { "source": "/articles/:slug", "destination": "/index.html" },
+
+    { "source": "/((?!api|.*\\..*).*)", "destination": "/index.html" }
   ]
 }

@@ -1,0 +1,447 @@
+/* Global Layout & Animation */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  min-height: 85vh;
+  animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Top Navigation & Breadcrumbs --- */
+.topNav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  background-color: transparent;
+}
+
+.backBtn:hover {
+  color: #4f46e5;
+  background-color: #f1f5f9;
+}
+
+.breadcrumb {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  background: #f8fafc;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.activeCrumb {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+/* --- Header Section --- */
+.header {
+  text-align: center;
+  margin-bottom: 48px;
+  position: relative;
+}
+
+.header h1 { 
+  font-size: 2.5rem; 
+  color: #0f172a; 
+  font-weight: 800; 
+  margin-bottom: 16px;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.header p { 
+  color: #64748b; 
+  font-size: 1.125rem;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* --- Exam Cards Grid (Landing Page) --- */
+.examGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.examCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 32px 24px;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.examCard:hover {
+  transform: translateY(-8px);
+  border-color: #818cf8;
+  box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.1), 0 8px 10px -6px rgba(79, 70, 229, 0.1);
+}
+
+.cardIcon {
+  color: #4f46e5;
+  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.5);
+}
+
+.cardContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.examCard h2 { 
+  font-size: 1.5rem; 
+  color: #1e293b; 
+  margin-bottom: 8px; 
+  font-weight: 700; 
+}
+
+.badge {
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 0.75rem;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-top: 4px;
+}
+
+.examCard:hover .badge {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.cardFooter {
+  margin-top: 24px;
+  padding-top: 20px;
+  width: 100%;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #4f46e5;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.arrowRotate {
+  transition: transform 0.2s ease;
+}
+
+.examCard:hover .arrowRotate {
+  transform: translateX(4px);
+}
+
+/* --- Controls: Search & Toggles --- */
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-top: 32px;
+  width: 100%;
+}
+
+.searchBox {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.searchBox input {
+  width: 100%;
+  padding: 14px 16px 14px 44px;
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  font-size: 1rem;
+  background: white;
+  color: #1e293b;
+  transition: all 0.2s ease;
+}
+
+.searchBox input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.toggleContainer {
+  display: inline-flex;
+  background: #f1f5f9;
+  padding: 5px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+}
+
+.toggleBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #64748b;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.95rem;
+}
+
+.toggleBtn:hover {
+  color: #334155;
+}
+
+.toggleBtn.active {
+  background: white;
+  color: #4f46e5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* --- PDF List / Grid --- */
+.pdfGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.pdfCard {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.pdfCard:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  transform: translateY(-2px);
+}
+
+.pdfInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.pdfTitleWrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex: 1;
+  min-width: 0; /* Prevents flex item from overflowing */
+}
+
+.iconBox {
+  background: #fee2e2;
+  padding: 12px;
+  border-radius: 12px;
+  color: #ef4444;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.textStack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.textStack h3 {
+  font-size: 1.1rem;
+  color: #1e293b;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.metaYear {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.metaTopic {
+  font-size: 0.85rem;
+  color: #0891b2; /* Cyan-600 */
+  font-weight: 500;
+  background: #ecfeff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  align-self: flex-start;
+}
+
+.newBadge {
+  font-size: 0.7rem;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1d4ed8;
+  padding: 2px 8px;
+  border-radius: 99px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid #93c5fd;
+}
+
+.downloadBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #f8fafc;
+  color: #334155;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  white-space: nowrap;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.downloadBtn:hover {
+  background: #1e293b;
+  color: white;
+  border-color: #1e293b;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Empty State --- */
+.emptyState {
+  text-align: center;
+  padding: 80px 20px;
+  color: #94a3b8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 0.5s ease;
+}
+
+.emptyIcon {
+  background: #f1f5f9;
+  padding: 24px;
+  border-radius: 50%;
+  margin-bottom: 24px;
+  color: #cbd5e1;
+}
+
+.subHint {
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  margin-top: 8px;
+}
+
+/* --- Responsive Design (Mobile & Tablet) --- */
+@media (max-width: 768px) {
+  .header h1 { font-size: 2rem; }
+  .pdfGrid { max-width: 100%; }
+}
+
+@media (max-width: 640px) {
+  .container { padding: 24px 16px; margin: 0; }
+  
+  .topNav { margin-bottom: 24px; }
+  .backBtn span { display: none; } /* Hide "All Exams" text on very small screens, keep icon */
+  .breadcrumb { font-size: 0.8rem; padding: 4px 10px; }
+
+  .header { margin-bottom: 32px; text-align: left; }
+  .header h1 { font-size: 1.75rem; }
+  .header p { font-size: 1rem; text-align: left;}
+
+  .controls { align-items: stretch; margin-top: 24px; }
+  .toggleContainer { justify-content: space-between; }
+  .toggleBtn { flex: 1; justify-content: center; padding: 10px; }
+
+  /* Stack the PDF Card for better mobile touch targets */
+  .pdfInfo { flex-direction: column; align-items: flex-start; gap: 16px; }
+  
+  .pdfTitleWrapper { width: 100%; }
+  
+  .downloadBtn {
+    width: 100%; /* Full width button for easier tapping */
+    margin-top: 4px;
+    padding: 12px;
+    background-color: #1e293b; /* Primary dark style by default on mobile */
+    color: white;
+    border-color: #1e293b;
+  }
+  
+  .downloadBtn:active { transform: scale(0.98); }
+
+  .textStack h3 { font-size: 1rem; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

@@ -1,57 +1,92 @@
-import Question from '../models/Question.js';
-import cloudinary from '../config/cloudinary.js';
+const mongoose = require('mongoose');
+const Question = require('../models/Question.js'); // Ensure this path is correct
+const cloudinary = require('../config/cloudinary.js'); // Your specified path
 
-// GET ALL QUESTIONS (with filters)
-export const getQuestions = async (req, res) => {
+// Helper for cache headers
+const setCache = (res, seconds = 60, sMax = 300) => {
+    res.set('Cache-Control', `public, max-age=${seconds}, s-maxage=${sMax}, stale-while-revalidate=600`);
+};
+
+// --- Helper for deleting old images from Cloudinary ---
+const deleteCloudinaryImage = async (imageUrl, folder) => {
+    if (imageUrl) {
+        // Example URL: https://res.cloudinary.com/yourcloudname/image/upload/v1678901234/folder/publicId.png
+        const parts = imageUrl.split('/');
+        // Get 'publicId.png' from the URL
+        const publicIdWithExtension = parts[parts.length - 1];
+        // Remove '.png' to get 'publicId'
+        const publicId = publicIdWithExtension.split('.')[0];
+
+        try {
+            await cloudinary.uploader.destroy(`${folder}/${publicId}`);
+            console.log(`Cloudinary image deleted: ${folder}/${publicId}`);
+        } catch (error) {
+            console.error(`Failed to delete Cloudinary image ${folder}/${publicId}:`, error);
+        }
+    }
+};
+
+/**
+ * GET /api/questions (Admin/Protected)
+ * Paginated list with advanced filters, search, and sorting.
+ * Assumes `Question.paginate` is available from mongoose-paginate-v2.
+ */
+exports.getQuestions = async (req, res) => {
     try {
-        // 1. Get query parameters with default values for pagination and sorting
-        const { 
-            page = 1, 
-            limit = 15, 
-            search = '', 
-            sortBy = 'createdAt', 
-            order = 'desc', 
-            exam, 
-            subject, 
-            year 
+        const {
+            page = 1,
+            limit = 10, // Default limit
+            search = '',
+            exam,
+            subject,
+            topic, // Added topic filter
+            year,
+            sortField = 'updatedAt', // Default sort field
+            sortOrder = -1 // -1 for descending (latest first), 1 for ascending
         } = req.query;
 
-        // 2. Build the filter object for the database query
-        const filter = {};
+        const query = {};
+
+        // Build search query (optimized for text index if available, otherwise regex)
         if (search) {
-            filter.questionText = { $regex: search, $options: 'i' };
+            const isNumericSearch = !isNaN(search) && search.trim() !== '';
+            if (isNumericSearch) {
+                query.questionNumber = parseInt(search);
+            } else {
+                query.$or = [
+                    { questionText: { $regex: search, $options: 'i' } },
+                    { subject: { $regex: search, $options: 'i' } },
+                    { topic: { $regex: search, $options: 'i' } },
+                    { 'options.text': { $regex: search, $options: 'i' } }, // Search within option texts
+                ];
+            }
         }
-        if (exam) filter.exam = exam;
-        if (subject) filter.subject = subject;
-        if (year) filter.year = year;
 
-        // 3. Build the sort object
-        const sort = {};
-        if (sortBy) {
-            sort[sortBy] = order === 'desc' ? -1 : 1;
-        }
+        // Add filters
+        if (exam) query.exam = exam;
+        if (subject) query.subject = { $regex: subject, $options: 'i' };
+        if (topic) query.topic = { $regex: topic, $options: 'i' };
+        if (year) query.year = parseInt(year);
 
-        // 4. Calculate the number of documents to skip
-        const skip = (page - 1) * parseInt(limit);
+        const options = {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            sort: { [sortField]: parseInt(sortOrder) },
+            lean: true, // Return plain JavaScript objects
+        };
 
-        // 5. Execute queries to get the current page's data and the total count
-        const [questions, totalCount] = await Promise.all([
-            Question.find(filter)
-                .sort(sort)
-                .skip(skip)
-                .limit(parseInt(limit)),
-            Question.countDocuments(filter)
-        ]);
-        
-        // 6. Calculate total pages
-        const totalPages = Math.ceil(totalCount / parseInt(limit));
+        const result = await Question.paginate(query, options);
 
-        // 7. Send the final, structured response back to the frontend
         res.status(200).json({
-            questions,
-            totalPages,
-            totalCount,
-            currentPage: parseInt(page)
+            questions: result.docs,
+            totalDocs: result.totalDocs,
+            limit: result.limit,
+            page: result.page,
+            totalPages: result.totalPages,
+            hasNextPage: result.hasNextPage,
+            hasPrevPage: result.hasPrevPage,
+            nextPage: result.nextPage,
+            prevPage: result.prevPage,
         });
 
     } catch (error) {
@@ -60,131 +95,393 @@ export const getQuestions = async (req, res) => {
     }
 };
 
-// GET A SINGLE QUESTION
-export const getQuestionById = async (req, res) => {
+exports.getPublicQuestions = async (req, res) => {
     try {
-        const question = await Question.findById(req.params.id);
-        if (!question) return res.status(404).json({ message: 'Question not found' });
+        const page = parseInt(req.query.page || 1);
+        const limit = parseInt(req.query.limit || 10); // This will now correctly be overridden by frontend
+
+        const query = {};
+        // Add your filter logic back in here, based on req.query
+        // Example:
+        if (req.query.exam) query.exam = req.query.exam;
+        if (req.query.subject) query.subject = { $regex: req.query.subject, $options: 'i' };
+        if (req.query.year) query.year = parseInt(req.query.year);
+        if (req.query.search) {
+            query.$or = [
+                { questionText: { $regex: req.query.search, $options: 'i' } },
+                { 'options.text': { $regex: req.query.search, $options: 'i' } },
+                // Add questionNumber search if applicable
+                ...(!isNaN(parseInt(req.query.search)) && parseInt(req.query.search).toString() === req.query.search
+                    ? [{ questionNumber: parseInt(req.query.search) }]
+                    : [])
+            ];
+        }
+
+
+        // Use a robust sort, defaulting to latest by _id or createdAt
+        let sortOptions = { _id: -1 }; // Default for public API
+        // If you want client-side sort control (e.g., /questions/public?sort=questionNumber)
+        if (req.query.sort) {
+            if (req.query.sort === 'questionNumber') sortOptions = { questionNumber: 1, _id: 1 };
+            else if (req.query.sort === '-questionNumber') sortOptions = { questionNumber: -1, _id: -1 };
+            else if (req.query.sort === 'createdAt') sortOptions = { createdAt: 1, _id: 1 };
+            else if (req.query.sort === '-createdAt') sortOptions = { createdAt: -1, _id: -1 };
+        }
+
+
+        const options = {
+            page: page,
+            limit: limit,
+            sort: sortOptions,
+            select: '-__v -updatedAt -explanationText -explanationImageURL -videoURL -correctOption',
+            lean: true,
+        };
+
+        const result = await Question.paginate(query, options);
+
+        setCache(res, 120, 600);
+        res.status(200).json({
+            questions: result.docs,
+            totalDocs: result.totalDocs,
+            limit: result.limit,
+            page: result.page,
+            totalPages: result.totalPages,
+            hasNextPage: result.hasNextPage,
+            hasPrevPage: result.hasPrevPage,
+            nextPage: result.nextPage,
+            prevPage: result.prevPage,
+        });
+
+    } catch (error) {
+        console.error('Error fetching public questions:', error);
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
+/**
+ * GET /api/questions/public/:id (Public)
+ * Fetches a single question by ID for public view (without sensitive data).
+ * (Added this for completeness, often needed for student view of a single question)
+ */
+
+exports.getPublicQuestionById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid question ID' });
+    }
+
+    // Public projection: keep what the student page needs; hide only internal meta
+    const projection = '-__v'; // keep createdAt/updatedAt for SEO; expose options + isCorrect, explanation & video
+
+    const question = await Question.findById(id).select(projection).lean();
+    if (!question) {
+      return res.status(404).json({ message: 'Question not found' });
+    }
+
+    if (!Array.isArray(question.options)) question.options = [];
+
+    setCache(res, 120, 600);
+    return res.status(200).json(question);
+  } catch (error) {
+    console.error('Error fetching public question by ID:', error);
+    return res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+};
+
+/**
+ * POST /api/questions (Admin/Protected)
+ * Creates a new question with image uploads.
+ */
+exports.createQuestion = async (req, res) => {
+    try {
+        const { exam, subject, topic, year, questionText, options, explanationText, videoURL, difficulty } = req.body;
+        let questionImageURL = '';
+        let explanationImageURL = '';
+        const parsedOptions = JSON.parse(options || '[]'); // Ensure options is parsed safely
+
+        // Basic server-side validation (Mongoose schema will provide more detail)
+        if (!exam || !subject || !topic || !year || !questionText || parsedOptions.length === 0) {
+            return res.status(400).json({ message: 'Missing required fields for question creation.' });
+        }
+        if (!parsedOptions.some(opt => opt.isCorrect)) {
+            return res.status(400).json({ message: 'At least one option must be marked as correct.' });
+        }
+        if (parsedOptions.length < 2) {
+             return res.status(400).json({ message: 'A question must have at least two options.' });
+        }
+
+        // Upload question image if provided
+        // req.files structure from uploadMiddleware: { questionImage: [{ path: '...' }], explanationImage: [{ path: '...' }], ... }
+        if (req.files && req.files.questionImage && req.files.questionImage.length > 0) {
+            const result = await cloudinary.uploader.upload(req.files.questionImage[0].path, {
+                folder: 'maarula-questions'
+            });
+            questionImageURL = result.secure_url;
+        }
+
+        // Upload explanation image if provided
+        if (req.files && req.files.explanationImage && req.files.explanationImage.length > 0) {
+            const result = await cloudinary.uploader.upload(req.files.explanationImage[0].path, {
+                folder: 'maarula-explanations'
+            });
+            explanationImageURL = result.secure_url;
+        }
+
+        // Upload images for options if provided
+        for (let i = 0; i < parsedOptions.length; i++) {
+            const optionImageKey = `option_${i}_image`;
+            if (req.files && req.files[optionImageKey] && req.files[optionImageKey].length > 0) {
+                const result = await cloudinary.uploader.upload(req.files[optionImageKey][0].path, {
+                    folder: `maarula-options`
+                });
+                parsedOptions[i].imageURL = result.secure_url;
+            }
+        }
+
+        const newQuestion = new Question({
+            // questionNumber will be set by the pre('save') hook in the Question model
+            exam,
+            subject,
+            topic,
+            year: Number(year),
+            questionText,
+            questionImageURL,
+            options: parsedOptions,
+            explanationText,
+            explanationImageURL,
+            videoURL,
+            difficulty: difficulty || 'Medium', // Use provided difficulty or default
+        });
+
+        await newQuestion.save(); // This triggers the pre('save') hook for questionNumber generation
+        res.status(201).json(newQuestion);
+
+    } catch (error) {
+        console.error('Error creating question:', error);
+
+        if (error.code === 11000 && error.keyPattern && error.keyPattern.questionNumber) {
+            return res.status(409).json({ message: 'A unique question number could not be assigned. Please try again.', details: error.keyValue });
+        }
+        
+        if (error.name === 'ValidationError') {
+            const errors = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({ message: 'Validation failed', errors: errors });
+        }
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+};
+
+// Admin/Protected: GET /api/questions/:id
+exports.getQuestionById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid question ID' });
+    }
+
+    const question = await Question.findById(id).lean();
+    if (!question) {
+      return res.status(404).json({ message: 'Question not found' });
+    }
+
+    setCache(res, 120, 600);
+    return res.status(200).json(question);
+  } catch (error) {
+    console.error('Error fetching question by ID:', error);
+    return res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+/**
+ * PUT /api/questions/:id (Admin/Protected)
+ * Updates an existing question with image handling (upload new, delete old/clear).
+ */
+exports.updateQuestion = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: 'Invalid question ID' });
+        }
+
+        const {
+            exam, subject, topic, year, questionText, options,
+            explanationText, videoURL, difficulty,
+            clearQuestionImage, clearExplanationImage,
+            // clearOption_X_Image flags will be checked dynamically
+        } = req.body;
+        const parsedOptions = JSON.parse(options || '[]');
+
+        // Fetch existing question
+        const question = await Question.findById(id);
+        if (!question) {
+            return res.status(404).json({ message: 'Question not found.' });
+        }
+
+        // --- Update scalar fields ---
+        question.exam = exam;
+        question.subject = subject;
+        question.topic = topic;
+        question.year = Number(year);
+        question.questionText = questionText;
+        question.explanationText = explanationText;
+        question.videoURL = videoURL;
+        question.difficulty = difficulty || 'Medium';
+
+        // --- Handle main question image ---
+        if (req.files && req.files.questionImage && req.files.questionImage.length > 0) { // New image uploaded
+            await deleteCloudinaryImage(question.questionImageURL, 'maarula-questions');
+            const result = await cloudinary.uploader.upload(req.files.questionImage[0].path, {
+                folder: 'maarula-questions'
+            });
+            question.questionImageURL = result.secure_url;
+        } else if (clearQuestionImage === 'true' && question.questionImageURL) {
+            // Frontend explicitly says to clear the image
+            await deleteCloudinaryImage(question.questionImageURL, 'maarula-questions');
+            question.questionImageURL = '';
+        }
+
+        // --- Handle explanation image ---
+        if (req.files && req.files.explanationImage && req.files.explanationImage.length > 0) { // New image uploaded
+            await deleteCloudinaryImage(question.explanationImageURL, 'maarula-explanations');
+            const result = await cloudinary.uploader.upload(req.files.explanationImage[0].path, {
+                folder: 'maarula-explanations'
+            });
+            question.explanationImageURL = result.secure_url;
+        } else if (clearExplanationImage === 'true' && question.explanationImageURL) {
+            // Frontend explicitly says to clear the image
+            await deleteCloudinaryImage(question.explanationImageURL, 'maarula-explanations');
+            question.explanationImageURL = '';
+        }
+
+        // --- Handle options (including their images) ---
+        const finalOptions = [];
+        const oldOptionImageMap = new Map(question.options.map((opt, idx) => [`option_${idx}`, opt.imageURL])); // Map old images by original index
+
+        for (let i = 0; i < parsedOptions.length; i++) {
+            const newOptionData = { ...parsedOptions[i] }; // Clone to avoid modifying original parsed data
+            const optionImageKey = `option_${i}_image`;
+            const oldImageUrlForThisIndex = oldOptionImageMap.get(`option_${i}`);
+
+            // 1. Handle new option image upload
+            if (req.files && req.files[optionImageKey] && req.files[optionImageKey].length > 0) {
+                if (oldImageUrlForThisIndex) { // Delete old image if it existed for this option
+                    await deleteCloudinaryImage(oldImageUrlForThisIndex, 'maarula-options'); 
+                }
+                const result = await cloudinary.uploader.upload(req.files[optionImageKey][0].path, {
+                    folder: `maarula-options`
+                });
+                newOptionData.imageURL = result.secure_url;
+            } 
+            // 2. Handle explicit clear request from frontend
+            else if (req.body[`clearOption_${i}_Image`] === 'true' && (newOptionData.imageURL || oldImageUrlForThisIndex)) {
+                 await deleteCloudinaryImage(newOptionData.imageURL || oldImageUrlForThisIndex, 'maarula-options');
+                 newOptionData.imageURL = ''; // Clear the URL in the data
+            }
+            // 3. If no new upload and no clear, retain existing image URL from parsedOptions
+            // This is already handled by `newOptionData = { ...parsedOptions[i] }` if the frontend sends it back.
+            // If the frontend *doesn't* send back the imageURL when it hasn't changed, 
+            // you might need additional logic here to re-add the oldImageUrlForThisIndex if `newOptionData.imageURL` is empty.
+            // For now, assuming frontend sends back existing image URLs if not changed/cleared.
+
+            finalOptions.push(newOptionData);
+        }
+
+        // Logic to delete images for options that were completely removed (not just updated)
+        const currentImageUrlsInDB = new Set(question.options.map(opt => opt.imageURL).filter(Boolean));
+        const finalImageUrls = new Set(finalOptions.map(opt => opt.imageURL).filter(Boolean));
+        
+        for (const url of currentImageUrlsInDB) {
+            if (!finalImageUrls.has(url)) { // If an old image URL is no longer in the final options
+                await deleteCloudinaryImage(url, 'maarula-options');
+            }
+        }
+
+        question.options = finalOptions; // Replace with the updated options array
+
+        await question.save(); // This will not trigger pre('save') for questionNumber as `isNew` is false
         res.status(200).json(question);
+
     } catch (error) {
+        console.error('Error updating question:', error);
+        if (error.name === 'ValidationError') {
+            const errors = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({ message: 'Validation failed', errors: errors });
+        }
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+};
+
+/**
+ * DELETE /api/questions/:id (Admin/Protected)
+ * Deletes a question and its associated images from Cloudinary.
+ */
+exports.deleteQuestion = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: 'Invalid question ID' });
+        }
+        const question = await Question.findById(id);
+
+        if (!question) {
+            return res.status(404).json({ message: 'Question not found.' });
+        }
+
+        // Delete associated images from Cloudinary before deleting the question
+        await deleteCloudinaryImage(question.questionImageURL, 'maarula-questions');
+        await deleteCloudinaryImage(question.explanationImageURL, 'maarula-explanations');
+        for (const option of question.options) {
+            await deleteCloudinaryImage(option.imageURL, 'maarula-options');
+        }
+
+        await Question.findByIdAndDelete(id);
+        res.status(200).json({ message: 'Question deleted successfully.' });
+
+    } catch (error) {
+        console.error('Error deleting question:', error);
         res.status(500).json({ message: 'Server Error' });
     }
 };
 
-// CREATE A QUESTION
-export const createQuestion = async (req, res) => {
+/**
+ * GET /api/questions/stats (Admin/Protected)
+ * Gets dashboard statistics.
+ */
+exports.getQuestionStats = async (req, res) => {
     try {
-        const questionData = { ...req.body };
-        const parsedOptions = JSON.parse(req.body.options);
-
-        if (req.files) {
-            for (const key in req.files) {
-                const result = await cloudinary.uploader.upload(req.files[key][0].path);
-                if (key === 'questionImage') questionData.questionImageURL = result.secure_url;
-                if (key === 'explanationImage') questionData.explanationImageURL = result.secure_url;
-                if (key.startsWith('option_')) {
-                    const optionIndex = parseInt(key.split('_')[1]);
-                    if (parsedOptions[optionIndex]) {
-                        parsedOptions[optionIndex].imageURL = result.secure_url;
-                    }
-                }
-            }
-        }
-        const newQuestion = new Question({ ...questionData, options: parsedOptions });
-        const savedQuestion = await newQuestion.save();
-        res.status(201).json(savedQuestion);
-    } catch (error) {
-        res.status(400).json({ message: 'Error creating question', error: error.message });
-    }
-};
-
-// UPDATE A QUESTION
-export const updateQuestion = async (req, res) => {
-    try {
-        const updateData = { ...req.body };
-        if (updateData.options) {
-            updateData.options = JSON.parse(updateData.options);
-        }
-        if (req.files) {
-            for (const key in req.files) {
-                const result = await cloudinary.uploader.upload(req.files[key][0].path);
-                if (key === 'questionImage') updateData.questionImageURL = result.secure_url;
-                if (key === 'explanationImage') updateData.explanationImageURL = result.secure_url;
-                if (key.startsWith('option_')) {
-                    const optionIndex = parseInt(key.split('_')[1]);
-                    if (updateData.options[optionIndex]) {
-                        updateData.options[optionIndex].imageURL = result.secure_url;
-                    }
-                }
-            }
-        }
-        const updatedQuestion = await Question.findByIdAndUpdate(req.params.id, updateData, { new: true });
-        if (!updatedQuestion) return res.status(404).json({ message: 'Question not found' });
-        res.status(200).json(updatedQuestion);
-    } catch (error) {
-        res.status(400).json({ message: 'Error updating question', error: error.message });
-    }
-};
-
-// DELETE A QUESTION
-export const deleteQuestion = async (req, res) => {
-    try {
-        const deletedQuestion = await Question.findByIdAndDelete(req.params.id);
-        if (!deletedQuestion) return res.status(404).json({ message: 'Question not found' });
-        res.status(200).json({ message: 'Question deleted successfully' });
-    } catch (error) {
-        res.status(500).json({ message: 'Server Error' });
-    }
-};
-
-//GET DASHBOARD STATS
-export const getQuestionStats = async (req, res) => {
-    try {
-        const totalQuestions = await Question.countDocuments();
-        const subjects = await Question.distinct('subject', { subject: { $ne: null, $ne: "" } });
-        const exams = await Question.distinct('exam', { exam: { $ne: null, $ne: "" } });
+        const totalQuestions = await Question.estimatedDocumentCount();
+        const subjects = await Question.distinct('subject', { subject: { $ne: null, $ne: '' } });
+        const exams = await Question.distinct('exam', { exam: { $ne: null, $ne: '' } });
+        setCache(res, 300, 900);
         res.status(200).json({
             totalQuestions,
             totalSubjects: subjects.length,
-            totalExams: exams.length,
+            totalExams: exams.length
         });
     } catch (error) {
         console.error('Error fetching question stats:', error);
         res.status(500).json({ message: 'Server Error while fetching stats' });
     }
 };
- 
-//  // TEMPORARY TESTING VERSION
-// exports.getQuestionStats = async (req, res) => {
-//     console.log('--- 📊 [TEST] Sending dummy stats data ---');
 
-//     // We are skipping the database and sending back fake numbers
-//     const dummyStats = {
-//         totalQuestions: 99,
-//         totalSubjects: 8,
-//         totalExams: 3,
-//     };
-
-//     res.status(200).json(dummyStats);
-// };
-// @desc    Get all unique filter options for the frontend
-// @route   GET /api/questions/filters
-export const getFilterOptions = async (req, res) => {
+/**
+ * GET /api/questions/filters (Public/Admin)
+ * Gets unique values for filter dropdowns.
+ */
+exports.getFilterOptions = async (req, res) => {
     try {
-        // This finds all unique values for the 'subject' field, ignoring any empty ones
-        const subjects = await Question.distinct('subject', { subject: { $ne: null, $ne: "" } });
-        
-        // This finds all unique values for the 'exam' field
-        const exams = await Question.distinct('exam', { exam: { $ne: null, $ne: "" } });
-        
-        // This finds all unique values for the 'year' field
+        const subjects = await Question.distinct('subject', { subject: { $ne: null, $ne: '' } });
+        const topics = await Question.distinct('topic', { topic: { $ne: null, $ne: '' } }); // Added topics
+        const exams = await Question.distinct('exam', { exam: { $ne: null, $ne: '' } });
         const years = await Question.distinct('year', { year: { $ne: null } });
-
-        // Send the lists back to the frontend
+        setCache(res, 3600, 7200);
         res.status(200).json({
             subjects: subjects.sort(),
+            topics: topics.sort(), // Include topics
             exams: exams.sort(),
-            years: years.sort((a, b) => b - a), // Sorts years from newest to oldest
+            years: years.sort((a, b) => b - a)
         });
     } catch (error) {
         console.error('Error fetching filter options:', error);
@@ -192,36 +489,31 @@ export const getFilterOptions = async (req, res) => {
     }
 };
 
-export const getRelatedQuestions = async (req, res) => {
+/**
+ * GET /api/questions/:id/related (Public/Admin)
+ * Gets related questions based on topic and exam.
+ */
+exports.getRelatedQuestions = async (req, res) => {
     try {
-        const originalQuestion = await Question.findById(req.params.id);
-        if (!originalQuestion) {
-            return res.status(404).json({ message: 'Original question not found' });
+        const { id } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: 'Invalid question ID' });
         }
 
-        // Find other questions with the same TOPIC and EXAM
-        const relatedQuestions = await Question.find({
-            topic: originalQuestion.topic, // Search by topic
-            exam: originalQuestion.exam,
-            _id: { $ne: req.params.id } // Exclude the current question
-        })
-        .limit(5)
-        .select('questionText exam subject topic'); // Include topic in the response
+        const original = await Question.findById(id, { topic: 1, exam: 1 }).lean();
+        if (!original) return res.status(404).json({ message: 'Original question not found' });
 
-        res.status(200).json(relatedQuestions);
+        const related = await Question.find(
+            { topic: original.topic, exam: original.exam, _id: { $ne: id } },
+            { questionText: 1, exam: 1, subject: 1, topic: 1 }
+        )
+            .limit(5)
+            .lean();
 
+        setCache(res, 300, 900);
+        res.status(200).json(related);
     } catch (error) {
         console.error('Error fetching related questions:', error);
-        res.status(500).json({ message: 'Server Error' });
-    }
-};
-export const getPublicQuestions = async (req, res) => {
-    try {
-        // Find all questions and sort them, newest year first
-        const questions = await Question.find({}).sort({ year: -1 });
-        res.status(200).json(questions);
-    } catch (error) {
-        console.error('Error fetching public questions:', error);
         res.status(500).json({ message: 'Server Error' });
     }
 };

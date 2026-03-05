@@ -48,7 +48,14 @@
   font-size: 0.8rem; font-weight: 600;
   color: #475569; text-transform: uppercase; letter-spacing: 0.5px;
 }
-.sortable { cursor: pointer; display: flex; align-items: center; gap: 6px; user-select: none; }
+/* .sortable itself just makes the th clickable */
+.sortable { cursor: pointer; user-select: none; } 
+/* The actual flex properties for aligning content inside the th */
+.sortableContent {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 .questionsTable tbody tr { border-bottom: 1px solid #f1f5f9; }
 .questionsTable tbody tr:last-child { border-bottom: none; }
 

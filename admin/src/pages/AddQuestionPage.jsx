@@ -1,4 +1,4 @@
-// For Admin add question page
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../api';
@@ -139,7 +139,11 @@ const AddQuestionPage = () => {
                         <select name="exam" value={formData.exam} onChange={handleInputChange}>
                             <option value="NIMCET">NIMCET</option>
                             <option value="CUET PG">CUET PG</option>
+                            <option value="MAH-CET">MAH-CET</option>
+                            <option value="JAMIA">JAMIA</option>
+                            <option value="IGDTUW">IGDTUW</option>
                             <option value="JEE">JEE</option>
+                            <option value="NDA">NDA</option>
                         </select>
                     </div>
                     <div className={styles.inputGroup}>

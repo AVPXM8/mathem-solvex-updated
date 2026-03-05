@@ -1,0 +1,229 @@
+/* ========== Theme tokens ========== */
+:root {
+  --brand-orange: #F97316;         /* primary accent */
+  --brand-orange-dark: #EA580C;    /* hover/active */
+  --brand-orange-light: #FFEDD5;   /* subtle backgrounds/pills */
+
+  --text-primary: #18181B;         /* headings */
+  --text-secondary: #52525B;       /* body/subtitles */
+  --text-light: #ffffff;           /* on dark */
+
+  --surface-color: #ffffff;        /* cards/surfaces */
+  --background-color: #f8fafc;     /* page/alt sections */
+  --border-color: #e2e8f0;         /* dividers/borders */
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.08);
+  --shadow-lg: 0 10px 28px rgba(0,0,0,.12);
+}
+
+/* ========== Container & Header ========== */
+.container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+.pageHeader { text-align: center; margin-bottom: 40px; }
+.pageHeader h1 {
+  font-size: 2.6rem; color: var(--text-primary); margin-bottom: 10px;
+  font-weight: 800; line-height: 1.15;
+}
+.pageHeader p { font-size: 1.1rem; color: var(--text-secondary); }
+
+/* (Optional) banners row */
+.bannerStrip {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px; margin-bottom: 22px;
+}
+.bannerItem { margin: 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); background: var(--surface-color); }
+.bannerItem img { width: 100%; height: 140px; object-fit: cover; display: block; }
+
+/* ========== Tabs ========== */
+.tabsContainer { display: flex; justify-content: center; gap: 12px; margin-bottom: 36px; flex-wrap: wrap; position: relative; }
+.tabButton {
+  position: relative; isolation: isolate;
+  padding: 10px 22px; font-size: 1rem; font-weight: 700;
+  border: 2px solid var(--border-color); border-radius: 10px;
+  background-color: var(--surface-color); color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color .2s ease, border-color .2s ease, transform .06s ease, color .2s ease, box-shadow .2s ease;
+}
+.tabButton:hover { background-color: var(--background-color); border-color: #cbd5e1; }
+.tabButton:active { transform: translateY(1px); }
+
+/* Active tab — supports aria-selected and .activeTab */
+.tabButton[aria-selected="true"],
+.tabButton.activeTab {
+  background-color: var(--brand-orange);
+  color: var(--text-light);
+  border-color: var(--brand-orange);
+  box-shadow: 0 4px 10px rgba(249,115,22,.22);
+}
+/* Active underline for any selected tab */
+.tabButton[aria-selected="true"]::after,
+.tabButton.activeTab::after {
+  content: '';
+  position: absolute;
+  left: 12px; right: 12px; bottom: -6px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--brand-orange) 0%, var(--brand-orange-dark) 100%);
+  border-radius: 3px;
+}
+
+/* Placements tab special sauce */
+#tab-placements { border-color: #fed7aa; }
+#tab-placements:hover { border-color: var(--brand-orange); }
+#tab-placements[aria-selected="true"],
+#tab-placements.activeTab {
+  background: linear-gradient(135deg, var(--brand-orange) 0%, var(--brand-orange-dark) 100%);
+  color: var(--text-light);
+  border-color: transparent;
+  box-shadow: 0 6px 16px rgba(234, 88, 12, .28);
+}
+/* Tiny count badge for placements if data-count present */
+#tab-placements[data-count]::after {
+  content: attr(data-count);
+  position: absolute; top: -8px; right: -10px;
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 20px; height: 20px; padding: 0 6px;
+  font-size: 12px; font-weight: 800;
+  background: var(--brand-orange-dark);
+  color: var(--text-light);
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  border: 2px solid var(--surface-color);
+}
+/* Add 💼 icon before Placements label (no JSX changes needed) */
+#tab-placements::before { content: '💼'; margin-right: 8px; display: inline-block; transform: translateY(1px); }
+
+/* Focus-visible ring for keyboard users */
+.tabButton:focus-visible,
+.linkPill:focus-visible,
+.studentCard a:focus-visible {
+  outline: 2px solid var(--brand-orange);
+  outline-offset: 3px;
+}
+
+/* ========== Grid & Cards ========== */
+.resultsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 26px;
+}
+
+.studentCard {
+  background-color: var(--surface-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden; text-align: center;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  border: 1px solid #eef2f7;
+}
+.studentCard:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+
+/* CLS-friendly ratio wrapper */
+.cardMedia { position: relative; width: 100%; padding-top: 75%; background: var(--background-color); }
+.cardMedia > img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: top center; display: block;
+}
+/* Fallback if you keep direct <img> */
+.studentCard img { width: 100%; height: 280px; object-fit: cover; object-position: top center; display: block; }
+
+.studentInfo { padding: 16px 14px 18px; }
+.studentInfo h3 { font-size: 1.12rem; margin: 0 0 6px; color: var(--text-primary); font-weight: 800; }
+.studentInfo span { display: inline-block; font-size: .98rem; color: var(--brand-orange); font-weight: 700; }
+
+/* Exam badge (achievers) */
+.examTag {
+  display: inline-block;
+  background-color: var(--brand-orange-light);
+  color: var(--brand-orange-dark);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  margin-top: 8px;
+  border: 1px solid #fed7aa;
+}
+
+/* ========== Placements theme ========== */
+.isPlacements .studentCard { border-color: #ffe8d9; }
+.isPlacements .studentCard:hover { box-shadow: 0 10px 28px rgba(234,88,12,.14); }
+.placementTag {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: .01em;
+  background-color: var(--brand-orange-light);
+  color: var(--brand-orange-dark);
+  border: 1px solid #fed7aa;
+}
+.isPlacements .studentInfo h3 { position: relative; }
+.isPlacements .studentInfo h3::after {
+  content: ''; display: block; width: 28px; height: 2px;
+  margin: 6px auto 0; background: var(--brand-orange); border-radius: 2px; opacity: .6;
+}
+
+/* ========== Share bar (matches SinglePost style but orange) ========== */
+.share {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+  margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border-color);
+}
+.shareLead { margin-right: 6px; color: var(--text-secondary); }
+
+.social {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; border-radius: 50%;
+  color: #fff; background: var(--brand-orange);
+  border: 1px solid transparent; cursor: pointer;
+  transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+}
+.social:hover { transform: translateY(-1px); background: var(--brand-orange-dark); }
+.copy { background: #334155; } .copy:hover { background: #0f172a; }
+
+/* Optional brand-tinted variations */
+.whatsapp { background: #25D366; } .whatsapp:hover { background: #1fb358; }
+.telegram { background: #229ED9; } .telegram:hover { background: #1b86b8; }
+.facebook { background: #1877F2; } .facebook:hover { background: #145fcc; }
+.twitter { background: #0F1419; } .twitter:hover { background: #000000; }
+.linkedin { background: #0A66C2; } .linkedin:hover { background: #084f99; }
+
+/* ========== Empty state & links row ========== */
+.emptyNote {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--text-secondary);
+  background: var(--background-color);
+  border: 1px dashed var(--border-color);
+  padding: 18px;
+  border-radius: 12px;
+}
+
+.linksRow {
+  margin-top: 28px;
+  display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+}
+.linkPill {
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 999px;
+  text-decoration: none;
+  color: var(--text-primary);
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
+  font-weight: 800;
+  transition: background-color .2s ease, border-color .2s ease, transform .06s ease, color .2s ease;
+}
+.linkPill:hover { background: var(--brand-orange-light); border-color: #fed7aa; color: var(--brand-orange-dark); }
+.linkPill:active { transform: translateY(1px); }
+
+/* ========== Responsive & reduced motion ========== */
+@media (max-width: 640px) {
+  .pageHeader h1 { font-size: 2rem; }
+  .pageHeader p { font-size: 1rem; }
+  .tabButton { padding: 9px 16px; font-size: .98rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+

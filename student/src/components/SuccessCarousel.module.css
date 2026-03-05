@@ -1,22 +1,43 @@
-.carouselContainer {
-  width: 100%;
-  margin-bottom: 60px; /* Space between carousel and next section */
+.carouselContainer{
+  width:100%;
+  margin:0 auto 60px;
+  overflow:hidden;
 }
 
-.bannerImage {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
+/* 16:9 wrapper so every slide is exactly the same height */
+.aspectBox{
+  position:relative;
+  width:100%;
+  aspect-ratio:16 / 9;     /* keeps a stable LCP + no layout shift */
+  background:#fff7ed;      /* light brand-friendly backdrop for letterboxing */
 }
 
-/* Optional: Style slick dots for a more modern look */
-.carouselContainer :global(.slick-dots li button:before) {
-  font-size: 12px;
-  color: #fff;
-  opacity: 0.75;
+/* Show entire banner without cropping */
+.bannerImage{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;      /* no cropping; full banner visible */
+  object-position:center;
+  display:block;
 }
 
-.carouselContainer :global(.slick-dots li.slick-active button:before) {
-  opacity: 1;
-  color: #fff;
+/* Slick dots (good contrast on banners) */
+.carouselContainer :global(.slick-dots){
+  bottom:12px;
+}
+.carouselContainer :global(.slick-dots li button:before){
+  font-size:10px;
+  color:#111827;
+  opacity:.35;
+}
+.carouselContainer :global(.slick-dots li.slick-active button:before){
+  color:#111827;
+  opacity:.9;
+}
+
+/* Remove outlines from slides on click */
+.carouselContainer :global(.slick-slide){
+  outline:none;
 }

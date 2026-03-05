@@ -9,6 +9,8 @@ import SingleQuestionPage from './pages/SingleQuestionPage';
 import ReportIssuePage from './pages/ReportIssuePage';
 import ArticleListPage from './pages/ArticleListPage';
 import SinglePostPage from './pages/SinglePostPage';
+import ResultsPage from './pages/ResultsPage';
+import PYQResourcesPage from './pages/PYQResourcesPage';
 // --- Import Layout Components ---
 import PublicLayout from './components/PublicLayout';
 
@@ -20,11 +22,14 @@ function App() {
             {/* === Public Routes (for students) === */}
             <Route path="/" element={<PublicLayout />}>
                 <Route index element={<HomePage />} />
+                <Route path="/results" element={<ResultsPage />} />
                 <Route path="questions" element={<QuestionLibraryPage />} />
                 <Route path="question/:id" element={<SingleQuestionPage />} />
                 <Route path="report-issue/:id" element={<ReportIssuePage />} />
                 <Route path="articles" element={<ArticleListPage />} />
                 <Route path="articles/:slug" element={<SinglePostPage />} />
+                <Route path="resources" element={<PYQResourcesPage />} />
+                <Route path="resources/:examName" element={<PYQResourcesPage />} />
             </Route>
              {/* Any other URL that doesn't match will be redirected to the public homepage */}
             <Route path="*" element={<Navigate to="/" />} />
