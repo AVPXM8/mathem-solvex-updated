@@ -60,7 +60,10 @@ const Header = () => {
             <div className={styles.dropdownMenu}>
               <Link to="/questions?exam=NIMCET">NIMCET</Link>
               <Link to="/questions?exam=CUET-PG">CUET PG</Link>
+              <Link to="/questions?exam=JAMIA">JAMIA</Link>
               <Link to="/questions?exam=MAH-CET">MAH-CET</Link>
+              <Link to="/questions?exam=AMU">AMU</Link>
+              <Link to="/questions?exam=VITMEE">VITMEE</Link>
             </div>
           </div>
           
@@ -73,11 +76,11 @@ const Header = () => {
               <a href="https://maarulaclasses.classx.co.in/new-courses" target="_blank" rel="noopener noreferrer">Our Courses</a>
               <a href="https://maarulaclasses.classx.co.in/test-series" target="_blank" rel="noopener noreferrer">Test Series</a>
               <Link to="/results">Our Results</Link>
-              <a href="https://www.maarula.in/about" target="_blank" rel="noopener noreferrer">About Us</a>
+              <Link to="/about">About Us</Link>
             </div>
           </div>
           
-          <a href="https://www.maarula.in/contact-us" target="_blank" rel="noopener noreferrer">Contact Us</a>
+          <NavLink to="/contact" className={({ isActive }) => isActive ? styles.active : ''}>Contact Us</NavLink>
         </nav>
 
         <div className={styles.headerActions}>
@@ -92,14 +95,20 @@ const Header = () => {
       <div className={`${styles.mobileMenuOverlay} ${isMobileMenuOpen ? styles.isOpen : ''}`}>
         <nav className={styles.mobileNav}>
           <MobileNavLink to="/">Home</MobileNavLink>
-          <MobileNavLink to="/questions">Previous Year Questions</MobileNavLink>
+          <MobileNavLink to="/questions">All PYQs</MobileNavLink>
+          <MobileNavLink to="/questions?exam=NIMCET">NIMCET PYQs</MobileNavLink>
+          <MobileNavLink to="/questions?exam=CUET-PG">CUET PG PYQs</MobileNavLink>
+          <MobileNavLink to="/questions?exam=JAMIA">JAMIA PYQs</MobileNavLink>
+          <MobileNavLink to="/questions?exam=MAH-CET">MAH-CET PYQs</MobileNavLink>
+          <MobileNavLink to="/questions?exam=AMU">AMU PYQs</MobileNavLink>
+          <MobileNavLink to="/questions?exam=VITMEE">VITMEE PYQs</MobileNavLink>
           <MobileNavLink to="/resources">PYQ PDF Downloads</MobileNavLink>
           <MobileNavLink to="/articles">Latest Update</MobileNavLink>
           <a href="https://maarulaclasses.classx.co.in/new-courses" target="_blank" rel="noopener noreferrer" onClick={closeMobileMenu}>Our Courses</a>
           <a href="https://maarulaclasses.classx.co.in/test-series" target="_blank" rel="noopener noreferrer" onClick={closeMobileMenu}>Test Series</a>
           <Link to="/results">Our Results</Link>
-          <a href="https://www.maarula.in/about" target="_blank" rel="noopener noreferrer" onClick={closeMobileMenu}>About Us</a>
-          <a href="https://www.maarula.in/contact-us" target="_blank" rel="noopener noreferrer" onClick={closeMobileMenu}>Contact Us</a>
+          <MobileNavLink to="/about">About Us</MobileNavLink>
+          <MobileNavLink to="/contact">Contact Us</MobileNavLink>
         </nav>
       </div>
     </header>
