@@ -1,8 +1,9 @@
-import cuet2026Paper from './CUET PG-2026 PAPER.pdf';
+// import cuet2026Paper from './CUET PG-2026 PAPER.pdf';
 
 export const PYQ_DATA = {
   NIMCET: {
     yearwise: [
+            { id: 'n26', title: 'NIMCET 2026 Official Paper', year: '2025', url: 'https://res.cloudinary.com/dph6urjjf/image/upload/v1773390874/CUET_PG-2026_PAPER_doqewp.pdf', isNew: true },
       { id: 'n25', title: 'NIMCET 2025 Official Paper', year: '2025', url: 'https://res.cloudinary.com/dph6urjjf/image/upload/v1772067974/NIMCET-2025_OFFICIAL_PAPER_vsyl7x.pdf', isNew: true },
       { id: 'n24', title: 'NIMCET 2024 Official Paper', year: '2024', url: 'https://res.cloudinary.com/dph6urjjf/image/upload/v1772067925/NIMCET-2024_OFFICIAL_PAPER_ku4bfn.pdf', isNew: true },
       { id: 'n23', title: 'NIMCET 2023 Official Paper', year: '2023', url: 'https://res.cloudinary.com/dph6urjjf/image/upload/v1772067954/NIMCET-2023_OFFICIAL_PAPER_x6y4oa.pdf' },
