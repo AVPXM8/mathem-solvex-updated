@@ -1,19 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, X, Bot, Sparkles, Link as LinkIcon } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import MathPreview from './MathPreview';
 import api from '../api';
 import { Link } from 'react-router-dom';
 import styles from './AITutor.module.css';
 
-const AITutor = ({ questionId, question }) => {  // ✅ accept full question object
+const AITutor = ({ questionId, question }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState([
-        { role: 'model', text: 'Hi! I am Vivek 👋, your AI Tutor for MCA entrance exams. I can help with Maths, Computer Science, Logical Reasoning, and English. Ask me any doubt about this question!' }
+        { role: 'model', text: 'Hi! I am Vivek 👋, your AI Tutor for MCA entrance exams powered by **Maarula Classes** — India\'s No. 1 MCA entrance coaching institute.\n\nI can help you with:\n- 📐 **Mathematics** (Calculus, Algebra, Probability…)\n- 💻 **Computer Science** (DSA, DBMS, OS…)\n- 🧠 **Logical Reasoning**\n- 📝 **English**\n\nAsk me any doubt about this question!' }
     ]);
     const [loading, setLoading] = useState(false);
     const scrollRef = useRef(null);
-    const inputRef = useRef(null); // ✅ ref to track if input is focused
+    const inputRef = useRef(null);
 
     // Auto-scroll to bottom of chat
     useEffect(() => {
@@ -29,6 +30,16 @@ const AITutor = ({ questionId, question }) => {  // ✅ accept full question obj
         }
     }, [isOpen]);
 
+    // Lock body scroll when chat is open on mobile
+    useEffect(() => {
+        if (isOpen && window.innerWidth <= 480) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => { document.body.style.overflow = ''; };
+    }, [isOpen]);
+
     const handleSend = async () => {
         if (!input.trim() || loading) return;
 
@@ -38,19 +49,17 @@ const AITutor = ({ questionId, question }) => {  // ✅ accept full question obj
         setLoading(true);
 
         try {
-            // Prepare clean history for Gemini API
             const history = messages
                 .filter(m => m.role === 'user' || m.role === 'model')
-                .slice(1) // skip initial greeting
+                .slice(1)
                 .map(m => ({
                     role: m.role,
                     parts: [{ text: m.text }]
                 }));
 
-            // ✅ Build question context from full question object
             const questionContext = question ? {
                 questionText: question.questionText,
-                options: question.options,          // includes isCorrect flag
+                options: question.options,
                 explanationText: question.explanationText,
                 subject: question.subject,
                 topic: question.topic,
@@ -63,7 +72,7 @@ const AITutor = ({ questionId, question }) => {  // ✅ accept full question obj
                 message: userMsg.text,
                 questionId: questionId,
                 history: history,
-                questionContext: questionContext,    // ✅ send question context
+                questionContext: questionContext,
             });
 
             setMessages(prev => [...prev, { role: 'model', text: res.data.text }]);
@@ -80,7 +89,7 @@ const AITutor = ({ questionId, question }) => {  // ✅ accept full question obj
             console.error("AI Chat Error:", err.response?.data || err.message);
             setMessages(prev => [...prev, {
                 role: 'model',
-                text: "Hey there! I'm just doing a bit of self-improvement so I can help you even better. Please try again after sometime."
+                text: "Hey there! I'm just doing a bit of self-improvement so I can help you even better. Please try again after sometime. 🔧"
             }]);
         } finally {
             setLoading(false);
@@ -90,9 +99,22 @@ const AITutor = ({ questionId, question }) => {  // ✅ accept full question obj
     const handleKeyDown = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            e.stopPropagation(); // ✅ stop event from reaching page-level keyboard shortcuts
+            e.stopPropagation();
             handleSend();
         }
+    };
+
+    // Render message content based on role
+    const renderMessageContent = (m) => {
+        if (m.role === 'model') {
+            return (
+                <div className={styles.markdownContent}>
+                    <ReactMarkdown>{m.text}</ReactMarkdown>
+                </div>
+            );
+        }
+        // User messages — plain text
+        return <span>{m.text}</span>;
     };
 
     return (
@@ -133,7 +155,7 @@ const AITutor = ({ questionId, question }) => {  // ✅ accept full question obj
                             }
                             return (
                                 <div key={i} className={`${styles.message} ${styles[m.role]}`}>
-                                    <MathPreview latexString={m.text} />
+                                    {renderMessageContent(m)}
                                 </div>
                             );
                         })}
@@ -149,7 +171,7 @@ const AITutor = ({ questionId, question }) => {  // ✅ accept full question obj
 
                     <div className={styles.inputArea}>
                         <input
-                            ref={inputRef}          // ✅ attach ref
+                            ref={inputRef}
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={handleKeyDown}

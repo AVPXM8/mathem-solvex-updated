@@ -59,7 +59,7 @@ const Header = () => {
             <NavLink to="/questions" className={styles.dropdownToggle}>Previous Year Questions <ChevronDown size={16} /></NavLink>
             <div className={styles.dropdownMenu}>
               <Link to="/questions?exam=NIMCET">NIMCET</Link>
-              <Link to="/questions?exam=CUET-PG">CUET PG</Link>
+              <Link to="/questions?exam=CUET PG">CUET PG</Link>
               <Link to="/questions?exam=JAMIA">JAMIA</Link>
               <Link to="/questions?exam=MAH-CET">MAH-CET</Link>
               <Link to="/questions?exam=AMU">AMU</Link>
@@ -97,7 +97,7 @@ const Header = () => {
           <MobileNavLink to="/">Home</MobileNavLink>
           <MobileNavLink to="/questions">All PYQs</MobileNavLink>
           <MobileNavLink to="/questions?exam=NIMCET">NIMCET PYQs</MobileNavLink>
-          <MobileNavLink to="/questions?exam=CUET-PG">CUET PG PYQs</MobileNavLink>
+          <MobileNavLink to="/questions?exam=CUET PG">CUET PG PYQs</MobileNavLink>
           <MobileNavLink to="/questions?exam=JAMIA">JAMIA PYQs</MobileNavLink>
           <MobileNavLink to="/questions?exam=MAH-CET">MAH-CET PYQs</MobileNavLink>
           <MobileNavLink to="/questions?exam=AMU">AMU PYQs</MobileNavLink>
