@@ -59,7 +59,7 @@ const QuestionListPage = () => {
       const response = await api.get(`/questions?${params.toString()}`);
       setQuestions(response.data.questions || []);
       setTotalPages(response.data.totalPages || 1);
-      setTotalCount(response.data.totalCount || 0);
+      setTotalCount(response.data.totalDocs || 0);
     } catch (error) {
       console.error('Error fetching questions:', error);
       toast.error('Could not load questions. Please check server connection.');

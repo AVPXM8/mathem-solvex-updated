@@ -31,6 +31,28 @@ export const AuthProvider = ({ children }) => {
         verifyUser();
     }, []); // The empty array [] ensures this runs only once.
 
+    // Session Heartbeat Ping
+    useEffect(() => {
+        let intervalId;
+        if (token && user) {
+            // Ping immediately, then every 60 seconds
+            const pingSession = async () => {
+                try {
+                    await api.post('/admin/session/sync');
+                } catch (error) {
+                    console.error("Session sync failed:", error);
+                }
+            };
+            
+            pingSession(); // Initial ping
+            intervalId = setInterval(pingSession, 60000); // 60s
+        }
+
+        return () => {
+            if (intervalId) clearInterval(intervalId);
+        };
+    }, [token, user]);
+
     // We wrap the login function in useCallback so it doesn't get re-created on every render.
     const login = useCallback(async (username, password, recaptchaToken) => {
         try {

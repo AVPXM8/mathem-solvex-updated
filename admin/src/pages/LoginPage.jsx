@@ -1,4 +1,4 @@
- import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
@@ -49,19 +49,19 @@ const LoginPage = () => {
     };
 
     // This function runs WHEN the user successfully checks the box
-    const handleCaptchaChange = (token) => {
+    const handleCaptchaChange = useCallback((token) => {
         if (token) {
             // A token exists, so the user is verified. Enable the login button.
             setIsCaptchaVerified(true);
             setError(''); // Clear any old errors
         }
-    };
+    }, []);
 
     // This function runs IF the CAPTCHA token expires after a timeout
-    const handleCaptchaExpired = () => {
+    const handleCaptchaExpired = useCallback(() => {
         // The token is no longer valid. Disable the login button.
         setIsCaptchaVerified(false);
-    };
+    }, []);
 
     return (
         <div className={styles.pageWrapper}>
