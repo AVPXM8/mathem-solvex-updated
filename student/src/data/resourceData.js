@@ -66,7 +66,6 @@ export const PYQ_DATA = {
         openInSamePage: true,
         description: "The most awaited CUET PG 2026 Official Paper is here! This is the absolute best paper to practice right now to understand the latest patterns and verify your preparation."
       },
-       { id: 'cp26', title: 'CUET PG 2026 Official Paper', year: '2026', url: 'https://res.cloudinary.com/dph6urjjf/image/upload/v1773390874/CUET_PG-2026_PAPER_doqewp.pdf', isNew: true },
       { id: 'cp25', title: 'CUET PG 2025 Official Paper', year: '2025', url: 'https://res.cloudinary.com/dph6urjjf/image/upload/v1772069538/CUET-PG_2025_OFFICIAL_PAPER_q6vrbr.pdf', isNew: true },
       { id: 'cp24', title: 'CUET PG 2024 Official Paper', year: '2024', url: 'https://res.cloudinary.com/dph6urjjf/image/upload/v1772069543/CUET-PG_2024_OFFICIAL_PAPER_m6pju7.pdf', isNew: true },
       { id: 'cp23', title: 'CUET PG 2023 Official Paper', year: '2023', url: 'https://res.cloudinary.com/dph6urjjf/image/upload/v1772069541/CUET-PG_2023_OFFICIAL_PAPER_xtmz5n.pdf' },
@@ -109,7 +108,22 @@ export const PYQ_DATA = {
   },
   'AMU': {
     yearwise: [
-      { id: 'amu25', title: 'AMU 2025 Official Paper', year: '2025', url: 'https://res.cloudinary.com/dph6urjjf/image/upload/v1772069367/AMU-2025_gatn2i.pdf', isNew: true }
+      { id: 'amu25', title: 'AMU 2025 Official Paper', year: '2025', url: 'https://res.cloudinary.com/dph6urjjf/image/upload/v1772069367/AMU-2025_gatn2i.pdf', isNew: true },
+      { id: 'amu22', title: 'AMU 2022 Official Paper', year: '2022', url: 'https://res.cloudinary.com/dph6urjjf/image/upload/v1773832061/AMU_MCA_ENTRANCE_2022___tadoi9.pdf' },
+      { id: 'amu21', title: 'AMU 2021 Official Paper', year: '2021', url: 'https://res.cloudinary.com/dph6urjjf/image/upload/v1773827136/AMU_MCA_ENTRANCE_2021___z1geuc.pdf' },
+      { id: 'amu20', title: 'AMU 2020 Official Paper', year: '2020', url: 'https://res.cloudinary.com/dph6urjjf/image/upload/v1773827136/AMU_MCA_ENTRANCE_2020___uorhvq.pdf' },
+      { id: 'amu19', title: 'AMU 2019 Official Paper', year: '2019', url: 'https://res.cloudinary.com/dph6urjjf/image/upload/v1773832059/AMU_MCA_ENTRANCE_2019_dzkeog.pdf' },
+      { id: 'amu18', title: 'AMU 2018 Official Paper', year: '2018', url: 'https://res.cloudinary.com/dph6urjjf/image/upload/v1773832060/AMU_MCA_ENTRANCE_2018_vm0rkc.pdf' },
+      { id: 'amu17', title: 'AMU 2017 Official Paper', year: '2017', url: 'https://res.cloudinary.com/dph6urjjf/image/upload/v1773827135/AMU_MCA_ENTRANCE_2017_dvmqjj.pdf' }
+    ],
+    topicwise: []
+  },
+  'WB-JECA': {
+    yearwise: [
+      { id: 'wj25', title: 'WB-JECA 2025 Official Paper', year: '2025', url: 'https://res.cloudinary.com/dph6urjjf/image/upload/v1774149769/JECA_2025_blr4xo.pdf', isNew: true },
+      { id: 'wj24', title: 'WB-JECA 2024 Official Paper', year: '2024', url: 'https://res.cloudinary.com/dph6urjjf/image/upload/v1774149768/JECA_2024_tvkyw5.pdf', isNew: true },
+      { id: 'wj23', title: 'WB-JECA 2023 Official Paper', year: '2023', url: 'https://res.cloudinary.com/dph6urjjf/image/upload/v1774149768/JECA_2023_fzqgwx.pdf' },
+      { id: 'wj22', title: 'WB-JECA 2022 Official Paper', year: '2022', url: 'https://res.cloudinary.com/dph6urjjf/image/upload/v1774149774/JECA_2022_nwjjdd.pdf' }
     ],
     topicwise: []
   },
