@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
@@ -9,26 +9,53 @@ const LoginPage = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [isInitializing, setIsInitializing] = useState(true);
     
     // This new state will control the login button's disabled status.
     const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [isTypingUsername, setIsTypingUsername] = useState(false);
+    const [isTypingPassword, setIsTypingPassword] = useState(false);
+    const [isDenyingPeek, setIsDenyingPeek] = useState(false);
+    const [particles, setParticles] = useState([]);
+    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+    const typingTimeoutRef = useRef(null);
+    const rightPanelRef = useRef(null);
 
     const recaptchaRef = useRef(null); 
     const auth = useAuth();
     const navigate = useNavigate();
     const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
+    // Simulate an initialization loading state (Skeleton Waiting)
+    useEffect(() => {
+        const timer = setTimeout(() => setIsInitializing(false), 1200);
+        return () => clearTimeout(timer);
+    }, []);
+
+    useEffect(() => {
+        const handleMouseMove = (e) => {
+            if (rightPanelRef.current) {
+                const rect = rightPanelRef.current.getBoundingClientRect();
+                setMousePos({
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                });
+            }
+        };
+        window.addEventListener('mousemove', handleMouseMove);
+        return () => window.removeEventListener('mousemove', handleMouseMove);
+    }, []);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         
-        // Get the token directly. It's guaranteed to be there because the button was enabled.
         const recaptchaToken = recaptchaRef.current.getValue();
 
-        // A final check, just in case the token expired.
         if (!recaptchaToken) {
             setError('CAPTCHA token expired. Please verify again.');
-            setIsCaptchaVerified(false); // Disable button again
+            setIsCaptchaVerified(false);
             return;
         }
 
@@ -39,74 +66,205 @@ const LoginPage = () => {
                 navigate('/admin/dashboard');
             }
         } catch (err) {
-            setError(err.message || 'An error occurred.');
-            // If login fails (e.g., wrong password), reset the reCAPTCHA.
+            setError(err.message || 'Authentication failed. Please check your credentials.');
             recaptchaRef.current.reset();
-            setIsCaptchaVerified(false); // Disable login button again
+            setIsCaptchaVerified(false);
         } finally {
             setLoading(false);
         }
     };
 
-    // This function runs WHEN the user successfully checks the box
     const handleCaptchaChange = useCallback((token) => {
         if (token) {
-            // A token exists, so the user is verified. Enable the login button.
             setIsCaptchaVerified(true);
-            setError(''); // Clear any old errors
+            setError(''); 
+            triggerHappyParticles('🛡️');
+            setTimeout(() => triggerHappyParticles('✅'), 300);
         }
     }, []);
 
-    // This function runs IF the CAPTCHA token expires after a timeout
     const handleCaptchaExpired = useCallback(() => {
-        // The token is no longer valid. Disable the login button.
         setIsCaptchaVerified(false);
     }, []);
 
+    const handleTyping = (setter) => {
+        setter(true);
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = setTimeout(() => setter(false), 1000);
+    };
+
+    const togglePasswordVisibility = () => {
+        if (!showPassword) {
+            setIsDenyingPeek(true);
+            setTimeout(() => {
+                setIsDenyingPeek(false);
+                setShowPassword(true);
+                // Burst happiness when revealed
+                triggerHappyParticles('👁️');
+                triggerHappyParticles('✨');
+            }, 400); // Reduced delay from 600ms
+        } else {
+            setShowPassword(false);
+        }
+    };
+
+    const triggerHappyParticles = (emoji = '🎉') => {
+        const newParticles = Array.from({ length: 10 }).map((_, i) => ({
+            id: Date.now() + i,
+            emoji,
+            dx: (Math.random() - 0.5) * 200,
+            dy: (Math.random() - 0.5) * 200,
+        }));
+        setParticles(prev => [...prev, ...newParticles]);
+        setTimeout(() => {
+            setParticles(prev => prev.filter(p => !newParticles.includes(p)));
+        }, 1000);
+    };
+
+    const calculateProgress = () => {
+        let progress = 0;
+        if (username.length > 2) progress += 33;
+        if (password.length > 5) progress += 33;
+        if (isCaptchaVerified) progress += 34;
+        return progress;
+    };
+
+    useEffect(() => {
+        if (username.length > 2 && password.length > 5 && isCaptchaVerified) {
+            triggerHappyParticles('🔥');
+        }
+    }, [username, password, isCaptchaVerified]);
+
     return (
         <div className={styles.pageWrapper}>
+            <div className={`${styles.shape} ${styles.blob1}`}></div>
+            <div className={`${styles.shape} ${styles.blob2}`}></div>
+
             <div className={styles.loginContainer}>
                 <div className={styles.leftPanel}>
                     <img src="/maarulalogo.png" alt="Maarula Classes Logo" className={styles.logo} />
-                    <h2>Welcome to the</h2>
-                    <h1>Admin Control Panel</h1>
-                    <p>Manage your question bank with power and ease.</p>
+                    <h2>Admin Portal</h2>
+                    <h1>Control Center</h1>
+                    <p>Enter your workspace to manage classes and students with lightning speed.</p>
                 </div>
-                <div className={styles.rightPanel}>
-                    <div className={styles.loginCard}>
-                        <h2 className={styles.title}>Admin Login</h2>
-                        <form onSubmit={handleSubmit}>
-                            {error && <p className={styles.error}>{error}</p>}
-                            <div className={styles.inputGroup}>
-                                <label htmlFor="username">Username</label>
-                                <div className={styles.inputWrapper}>
-                                    <i className="fas fa-user"></i>
-                                    <input type="text" id="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter your username" required />
+                
+                <div className={styles.rightPanel} ref={rightPanelRef}>
+                    <div className={styles.mouseGlow} style={{left: mousePos.x, top: mousePos.y}}></div>
+                    <div className={styles.floatingDecor} style={{top: '10%', left: '10%', animationDelay: '0s'}}>✨</div>
+                    <div className={styles.floatingDecor} style={{bottom: '20%', right: '15%', animationDelay: '-5s', fontSize: '3rem'}}>🚀</div>
+                    <div className={styles.floatingDecor} style={{top: '40%', right: '10%', animationDelay: '-10s'}}>💡</div>
+                    <div className={styles.floatingDecor} style={{bottom: '10%', left: '20%', animationDelay: '-15s', fontSize: '1.5rem'}}>🔥</div>
+
+                    {particles.map(p => (
+                        <span 
+                            key={p.id} 
+                            className={styles.happyParticle} 
+                            style={{'--dx': `${p.dx}px`, '--dy': `${p.dy}px`, left: '50%', top: '50%'}}
+                        >
+                            {p.emoji}
+                        </span>
+                    ))}
+
+                    {isInitializing ? (
+                        <div className={styles.loginCard}>
+                            <div className={`${styles.skeleton} ${styles.skeletonText}`} style={{width: '60%'}}></div>
+                            <div className={`${styles.skeleton} ${styles.skeletonInput}`}></div>
+                            <div className={`${styles.skeleton} ${styles.skeletonInput}`}></div>
+                            <div className={`${styles.skeleton} ${styles.skeletonInput}`} style={{height: '80px'}}></div>
+                            <div className={`${styles.skeleton} ${styles.skeletonButton}`}></div>
+                        </div>
+                    ) : (
+                        <div className={styles.loginCard}>
+                            <div className={styles.successMeter}>
+                                <div className={styles.successMeterFill} style={{width: `${calculateProgress()}%`}}></div>
+                            </div>
+                            <h2 className={styles.title}>Welcome Back Admins! 👑</h2>
+                            
+                            {error && (
+                                <div className={styles.errorContainer}>
+                                    <i className="fas fa-exclamation-circle"></i>
+                                    <span>{error}</span>
                                 </div>
-                            </div>
-                            <div className={styles.inputGroup}>
-                                <label htmlFor="password">Password</label>
-                                <div className={styles.inputWrapper}>
-                                    <i className="fas fa-lock"></i>
-                                    <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password" required />
+                            )}
+
+                            <form onSubmit={handleSubmit}>
+                                <div className={`${styles.inputGroup} ${isTypingUsername ? styles.isTyping : ''}`}>
+                                    <label htmlFor="username">Username</label>
+                                    <div className={styles.inputWrapper}>
+                                        <i className="fas fa-user"></i>
+                                        <input 
+                                            type="text" 
+                                            id="username" 
+                                            value={username} 
+                                            onChange={(e) => {
+                                                setUsername(e.target.value);
+                                                handleTyping(setIsTypingUsername);
+                                            }} 
+                                            placeholder="Username" 
+                                            required 
+                                        />
+                                        <div className={styles.typingSkeleton}></div>
+                                        <span className={styles.interactiveEmoji}>
+                                            {username ? '🧐' : '👋'}
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className={styles.recaptchaContainer}>
-                                <ReCAPTCHA
-                                    ref={recaptchaRef}
-                                    sitekey={recaptchaSiteKey}
-                                    onChange={handleCaptchaChange}
-                                    onExpired={handleCaptchaExpired}
-                                />
-                            </div>
-                            {/* The button is now disabled until the CAPTCHA is verified */}
-                            <button type="submit" className={styles.loginButton} disabled={!isCaptchaVerified || loading}>
-                                {loading ? 'Verifying...' : 'Login Securely'}
-                            </button>
-                        </form>
-                    </div>
+                                <div className={`${styles.inputGroup} ${isTypingPassword ? styles.isTyping : ''}`}>
+                                    <label htmlFor="password">
+                                        Password {showPassword && <span style={{color: '#0057FF', fontSize: '0.7rem', marginLeft: '5px'}}>(REVEALED 🔓)</span>}
+                                    </label>
+                                    <div className={styles.inputWrapper}>
+                                        <i className="fas fa-lock"></i>
+                                        <input 
+                                            style={showPassword ? {letterSpacing: 'normal', fontWeight: '600'} : {}}
+                                            type={showPassword ? 'text' : 'password'} 
+                                            id="password" 
+                                            value={password} 
+                                            onChange={(e) => {
+                                                setPassword(e.target.value);
+                                                handleTyping(setIsTypingPassword);
+                                            }} 
+                                            placeholder="••••••••" 
+                                            required 
+                                        />
+                                        <button 
+                                            type="button" 
+                                            className={`${styles.passwordToggle} ${isDenyingPeek ? styles.denying : ''}`}
+                                            onClick={togglePasswordVisibility}
+                                            disabled={isDenyingPeek}
+                                        >
+                                            <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                                        </button>
+                                        <div className={styles.typingSkeleton}></div>
+                                        <span className={styles.interactiveEmoji}>
+                                            {isDenyingPeek ? '🙅‍♂️' : (showPassword ? '😜' : '🙈')}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className={`${styles.recaptchaArea} ${isCaptchaVerified ? styles.verified : ''}`}>
+                                     <div className={styles.robotAssistant}>
+                                         {isCaptchaVerified ? '👨‍💻' : '🤖'}
+                                     </div>
+                                     <div className={styles.securityLabel}>
+                                         <i className={`fas ${isCaptchaVerified ? 'fa-shield-check' : 'fa-user-shield'}`}></i>
+                                         {isCaptchaVerified ? 'Security Verified' : 'Confirm you are Human'}
+                                     </div>
+                                    <ReCAPTCHA
+                                        ref={recaptchaRef}
+                                        sitekey={recaptchaSiteKey}
+                                        onChange={handleCaptchaChange}
+                                        onExpired={handleCaptchaExpired}
+                                    />
+                                </div>
+                                <button type="submit" className={styles.loginButton} disabled={!isCaptchaVerified || loading}>
+                                    {loading ? 'Verifying Identity...' : 'Access Admin Panel'}
+                                </button>
+                            </form>
+                        </div>
+                    )}
+                    
                      <p className={styles.goBackLink}>
-                         <a href="https://questions.maarula.in">&larr; Visit Student Portal</a>
+                         <a href="https://questions.maarula.in">&larr; Student Portal</a>
                     </p>
                 </div>
             </div>
