@@ -1,11 +1,10 @@
 const mongoose = require('mongoose');
 const NodeCache = require('node-cache');
 const Question = require('../models/Question.js'); // Ensure this path is correct
-const cloudinary = require('../config/cloudinary.js'); // Your specified path
-const { deleteCloudinaryImage } = require('../utils/cloudinaryUtils.js');
+const { uploadImage, deleteImage } = require('../utils/storageUtils.js');
 
 
-// ─── Application-level in-memory cache ───────────────────────────────────────
+// Application-level in-memory cache
 // Significantly reduces MongoDB load for high-traffic public endpoints.
 const cache = new NodeCache({
   stdTTL: 300,           // default: 5 minutes
@@ -100,7 +99,7 @@ exports.getQuestions = async (req, res) => {
 };
 
 exports.getPublicQuestions = async (req, res) => {
-    // ── cache check ──────────────────────────────────────────────────────────
+    // cache check
     const cacheKey = publicQuestionsKey(req.query);
     const hit = cache.get(cacheKey);
     if (hit) {
@@ -191,7 +190,7 @@ exports.getPublicQuestionById = async (req, res) => {
       return res.status(400).json({ message: 'Invalid question ID' });
     }
 
-    // ── cache check ────────────────────────────────────────────────────────
+    // cache check
     const cacheKey = publicByIdKey(id);
     const hit = cache.get(cacheKey);
     if (hit) {
@@ -243,17 +242,13 @@ exports.createQuestion = async (req, res) => {
         // Upload question image if provided
         // req.files structure from uploadMiddleware: { questionImage: [{ path: '...' }], explanationImage: [{ path: '...' }], ... }
         if (req.files && req.files.questionImage && req.files.questionImage.length > 0) {
-            const result = await cloudinary.uploader.upload(req.files.questionImage[0].path, {
-                folder: 'maarula-questions'
-            });
+            const result = await uploadImage(req.files.questionImage[0].path, 'maarula-questions');
             questionImageURL = result.secure_url;
         }
 
         // Upload explanation image if provided
         if (req.files && req.files.explanationImage && req.files.explanationImage.length > 0) {
-            const result = await cloudinary.uploader.upload(req.files.explanationImage[0].path, {
-                folder: 'maarula-explanations'
-            });
+            const result = await uploadImage(req.files.explanationImage[0].path, 'maarula-explanations');
             explanationImageURL = result.secure_url;
         }
 
@@ -261,9 +256,7 @@ exports.createQuestion = async (req, res) => {
         for (let i = 0; i < parsedOptions.length; i++) {
             const optionImageKey = `option_${i}_image`;
             if (req.files && req.files[optionImageKey] && req.files[optionImageKey].length > 0) {
-                const result = await cloudinary.uploader.upload(req.files[optionImageKey][0].path, {
-                    folder: `maarula-options`
-                });
+                const result = await uploadImage(req.files[optionImageKey][0].path, 'maarula-options');
                 parsedOptions[i].imageURL = result.secure_url;
             }
         }
@@ -364,27 +357,23 @@ exports.updateQuestion = async (req, res) => {
 
         // --- Handle main question image ---
         if (req.files && req.files.questionImage && req.files.questionImage.length > 0) { // New image uploaded
-            await deleteCloudinaryImage(question.questionImageURL);
-            const result = await cloudinary.uploader.upload(req.files.questionImage[0].path, {
-                folder: 'maarula-questions'
-            });
+            await deleteImage(question.questionImageURL);
+            const result = await uploadImage(req.files.questionImage[0].path, 'maarula-questions');
             question.questionImageURL = result.secure_url;
         } else if (clearQuestionImage === 'true' && question.questionImageURL) {
             // Frontend explicitly says to clear the image
-            await deleteCloudinaryImage(question.questionImageURL);
+            await deleteImage(question.questionImageURL);
             question.questionImageURL = '';
         }
 
         // --- Handle explanation image ---
         if (req.files && req.files.explanationImage && req.files.explanationImage.length > 0) { // New image uploaded
-            await deleteCloudinaryImage(question.explanationImageURL);
-            const result = await cloudinary.uploader.upload(req.files.explanationImage[0].path, {
-                folder: 'maarula-explanations'
-            });
+            await deleteImage(question.explanationImageURL);
+            const result = await uploadImage(req.files.explanationImage[0].path, 'maarula-explanations');
             question.explanationImageURL = result.secure_url;
         } else if (clearExplanationImage === 'true' && question.explanationImageURL) {
             // Frontend explicitly says to clear the image
-            await deleteCloudinaryImage(question.explanationImageURL);
+            await deleteImage(question.explanationImageURL);
             question.explanationImageURL = '';
         }
 
@@ -400,16 +389,14 @@ exports.updateQuestion = async (req, res) => {
             // 1. Handle new option image upload
             if (req.files && req.files[optionImageKey] && req.files[optionImageKey].length > 0) {
                 if (oldImageUrlForThisIndex) { // Delete old image if it existed for this option
-                    await deleteCloudinaryImage(oldImageUrlForThisIndex); 
+                    await deleteImage(oldImageUrlForThisIndex); 
                 }
-                const result = await cloudinary.uploader.upload(req.files[optionImageKey][0].path, {
-                    folder: `maarula-options`
-                });
+                const result = await uploadImage(req.files[optionImageKey][0].path, 'maarula-options');
                 newOptionData.imageURL = result.secure_url;
             } 
             // 2. Handle explicit clear request from frontend
             else if (req.body[`clearOption_${i}_Image`] === 'true' && (newOptionData.imageURL || oldImageUrlForThisIndex)) {
-                 await deleteCloudinaryImage(newOptionData.imageURL || oldImageUrlForThisIndex);
+                 await deleteImage(newOptionData.imageURL || oldImageUrlForThisIndex);
                  newOptionData.imageURL = ''; // Clear the URL in the data
             }
             // 3. If no new upload and no clear, retain existing image URL from parsedOptions
@@ -427,7 +414,7 @@ exports.updateQuestion = async (req, res) => {
         
         for (const url of currentImageUrlsInDB) {
             if (!finalImageUrls.has(url)) { // If an old image URL is no longer in the final options
-                await deleteCloudinaryImage(url);
+                await deleteImage(url);
             }
         }
 
@@ -464,10 +451,10 @@ exports.deleteQuestion = async (req, res) => {
         }
 
         // Delete associated images from Cloudinary before deleting the question
-        await deleteCloudinaryImage(question.questionImageURL);
-        await deleteCloudinaryImage(question.explanationImageURL);
+        await deleteImage(question.questionImageURL);
+        await deleteImage(question.explanationImageURL);
         for (const option of question.options) {
-            await deleteCloudinaryImage(option.imageURL);
+            await deleteImage(option.imageURL);
         }
 
         await Question.findByIdAndDelete(id);
@@ -509,7 +496,7 @@ exports.getQuestionStats = async (req, res) => {
  */
 exports.getFilterOptions = async (req, res) => {
     try {
-        // ── cache check ──────────────────────────────────────────────────────
+        // cache check
         const hit = cache.get(FILTER_KEY);
         if (hit) {
             setCache(res, 3600, 7200);
@@ -549,7 +536,7 @@ exports.getRelatedQuestions = async (req, res) => {
             return res.status(400).json({ message: 'Invalid question ID' });
         }
 
-        // ── cache check ──────────────────────────────────────────────────────
+        // cache check
         const cacheKey = relatedKey(id);
         const hit = cache.get(cacheKey);
         if (hit) {

@@ -1,6 +1,5 @@
 const Post = require('../models/Post');
-const cloudinary = require('../config/cloudinary');
-const { deleteCloudinaryImage, extractCloudinaryUrlsFromHtml } = require('../utils/cloudinaryUtils');
+const { uploadImage, deleteImage, extractStorageUrlsFromHtml } = require('../utils/storageUtils');
 
 
 // Helper: slugify title consistently
@@ -97,7 +96,7 @@ exports.createPost = async (req, res) => {
     };
 
     if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path);
+      const result = await uploadImage(req.file.path, 'maarula-posts');
       postData.featuredImage = result.secure_url;
     }
 
@@ -136,20 +135,20 @@ exports.updatePost = async (req, res) => {
     if (!post) return res.status(404).json({ message: 'Post not found' });
 
     if (updateData.content) {
-      const oldUrls = extractCloudinaryUrlsFromHtml(post.content);
-      const newUrls = extractCloudinaryUrlsFromHtml(updateData.content);
+      const oldUrls = extractStorageUrlsFromHtml(post.content);
+      const newUrls = extractStorageUrlsFromHtml(updateData.content);
       const orphanedUrls = oldUrls.filter(url => !newUrls.includes(url));
       for (const url of orphanedUrls) {
-        await deleteCloudinaryImage(url);
+        await deleteImage(url);
       }
     }
 
     // New featured image
     if (req.file) {
       if (post.featuredImage) {
-        await deleteCloudinaryImage(post.featuredImage);
+        await deleteImage(post.featuredImage);
       }
-      const result = await cloudinary.uploader.upload(req.file.path);
+      const result = await uploadImage(req.file.path, 'maarula-posts');
       updateData.featuredImage = result.secure_url;
     }
 
@@ -169,11 +168,11 @@ exports.deletePost = async (req, res) => {
     if (!post) return res.status(404).json({ message: 'Post not found' });
 
     if (post.featuredImage) {
-      await deleteCloudinaryImage(post.featuredImage);
+      await deleteImage(post.featuredImage);
     }
-    const contentUrls = extractCloudinaryUrlsFromHtml(post.content);
+    const contentUrls = extractStorageUrlsFromHtml(post.content);
     for (const url of contentUrls) {
-      await deleteCloudinaryImage(url);
+      await deleteImage(url);
     }
 
     await post.deleteOne();
@@ -189,7 +188,7 @@ exports.deletePost = async (req, res) => {
 exports.uploadEditorImage = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'No image file provided.' });
-    const result = await cloudinary.uploader.upload(req.file.path);
+    const result = await uploadImage(req.file.path, 'maarula-posts');
     res.status(200).json({ location: result.secure_url });
   } catch (e) {
     console.error('Editor image upload error:', e);
